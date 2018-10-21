@@ -1,20 +1,3 @@
-"""
-INITIAL RELEASE, 18.10.16(YY.MM.DD):
-- Data import and variable string cleansing code provided by Eloisa and adjusted by me
-- Began work on comparing speed-time & occupancy time using most of Tom's code
-
-18.10.19:
-    - Added code for finding relative path to data.
-
-18.10.20:
-    - Updated tasklist (Task 1 done by Tom)
-    - Task 2: Create code to plot everything against everything else
-    - Planned: 0.0 should be accepted for some/all variables
-    - Removal of empty lanes from data read-in(Lanes 5 - 7)
-    - Generalization of datetime code to include date as well, removal of time column
-    - "identity" column to condense identifying information
-"""
-
 import pandas as pd 
 import numpy as np
 import matplotlib.pyplot as plt
