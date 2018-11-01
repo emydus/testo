@@ -25,7 +25,7 @@ df = pd.read_csv('M42 A Carriageway 40091017.tcd.csv',
 	'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)', 
 	'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)', 
 	'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
-	na_values = ['-1'])
+	na_values = ['-1','0'])
 #change header names to remove white spaces
 df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_').str.replace('(', '').str.replace(')', '')
 
@@ -105,5 +105,12 @@ def SpeedOccupancy(sensor1,sensor2):
 #SpeedOccupancy('M42/6117','M42/6190A')
 #Call function for range at first set of sliproads
 #Speedtime('M42/6190A','M42/6200A')
-
+a=0
 print(df[speed_all[0:4]].describe(include=[np.number]))
+for i in speed_all:
+    a+=1
+    df[i].plot.hist(bins=120,rwidth=0.9)
+    plt.title(i)
+    plt.subplot(1,3,a)
+plt.show()
+del a
