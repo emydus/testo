@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import datetime
 from scipy.stats import gaussian_kde
 import numpy as np
+from sklearn.cluster import KMeans
 #import data as a panda dataframe
 df = pd.read_csv('M42 A Carriageway 40091017.tcd.csv',
 	usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Flow(Category 1)', 
@@ -29,22 +30,30 @@ df['avg_speed'] = df[['speedlane_1', 'speedlane_2', 'speedlane_3',
 df['avg_flow'] = df[['flowlane_1', 'flowlane_2', 'flowlane_3',
 					'flowlane_4', 'flowlane_5', 'flowlane_6',
 					'flowlane_7']].mean(axis=1)
-
+#remove nans
 df.replace(["NaN", np.nan], 0, inplace = True)
-
 #change time to datetime format
 df['time'] = pd.to_datetime(df['time'],format= '%H:%M' ).dt.time
-#visualise data
-def graphcolour(variable1, variable2):
-	"""
-	function to visualise point density by colour
-	"""
-	x = variable1; y = variable2
-	xy = np.vstack([x, y])
-	z = gaussian_kde(xy)(xy)
-	idx = z.argsort()
-	x, y, z = x[idx], y[idx], z[idx]
-	return z
-flow_speed = graphcolour(df['avg_speed'], df['avg_flow'])
-plt.scatter(df['avg_speed'], df['avg_flow'], c=flow_speed)
+
+# #visualise data
+# def graphcolour(variable1, variable2):
+# 	"""
+# 	function to visualise point density by colour
+# 	"""
+# 	x = variable1; y = variable2
+# 	xy = np.vstack([x, y])
+# 	z = gaussian_kde(xy)(xy)
+# 	idx = z.argsort()
+# 	x, y, z = x[idx], y[idx], z[idx]
+# 	return z
+
+# flow_speed = graphcolour(df['avg_speed'], df['avg_flow'])
+# plt.scatter(df['avg_speed'], df['avg_flow'], c=flow_speed)
+dfarray = df[['avg_speed', 'avg_flow']].values
+kmeans = KMeans(n_clusters=3)
+kmeans.fit(dfarray)
+plt.scatter(dfarray[:,0],dfarray[:,1], c=kmeans.labels_, cmap='rainbow')
+plt.scatter(kmeans.cluster_centers_[:,0] ,kmeans.cluster_centers_[:,1], color='black')  
+plt.xlabel('avg speed')
+plt.ylabel('avg flow')
 plt.show()
