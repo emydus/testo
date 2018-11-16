@@ -23,7 +23,6 @@ df['avg_speed'] = df[['speedlane_1', 'speedlane_2', 'speedlane_3',
 					'speedlane_7']].mean(axis=1)
 #change time to datetime format
 df['time'] = pd.to_datetime(df['time'],format= '%H:%M' ).dt.time
-
 def group(column1):
 	"""
 	group by column and create separate dataframes
@@ -31,40 +30,37 @@ def group(column1):
 	i = 0 
 	grouped = df.groupby(column1)
 	dframe = {}
-	timedic = {}
 	for name, group in grouped:
 		dframe[i] = group
 		i = i+1
-		timedic[name] = i
-	return dframe, timedic
- 
-dframe, timedic = group('time')
-a_min = timedic[datetime.time(int(input('minimum hour?')), int(input('minimum minute?')))]  # the minimial value of the parameter a
-a_max = timedic[datetime.time(int(input('maximum hour?')), int(input('maximum minute?')))]  # the maximal value of the parameter a
-a_init = a_min  # the value of the parameter a to be used initially, when the graph is created
+	return(dframe)
+dframe = group('time')
+a_min = 0    # the minimial value of the paramater a
+a_max = len(dframe)  # the maximal value of the paramater a
+a_init = 0   # the value of the parameter a to be used initially, when the graph is created
 fig = plt.figure(figsize=(8,3))
 plot_ax = plt.axes([0.1, 0.2, 0.8, 0.65])
 slider_ax = plt.axes([0.1, 0.05, 0.8, 0.05])
 # in plot_ax, plot the function with the initial value of the parameter a
 plt.axes(plot_ax) # select plot_ax
-wid_plot, = plt.plot(dframe[a_init]['geographic_address'], dframe[a_init]['avg_speed'], 'r')
+sin_plot, = plt.plot(dframe[a_init]['geographic_address'], dframe[a_init]['avg_speed'], 'r')
 plt.xlim(0, len(dframe[1]))
 plt.ylim(0, 200)
 #create the slider
 a_slider = Slider(slider_ax,      # the axes object containing the slider
                   'a',            # the name of the slider parameter
-                  (a_min/60)*100,          # converts minutes to hours
-                  (a_max/60)*100,          # maximal value of the parameter
+                  a_min,          # minimal value of the parameter
+                  a_max,          # maximal value of the parameter
                   valinit=a_init  # initial value of the parameter
                   )
 # Ddefine a function that will be executed each time the value
 # indicated by the slider changes. The variable of this function will
 # be assigned the value of the slider.
 def update(a):
-    wid_plot.set_ydata(dframe[round(a)]['avg_speed']) 
-    wid_plot.set_xdata(dframe[round(a)]['geographic_address'])# set new y-coordinates of the plotted points
+    sin_plot.set_ydata(dframe[round(a)]['avg_speed']) 
+    sin_plot.set_xdata(dframe[round(a)]['geographic_address'])# set new y-coordinates of the plotted points
     fig.canvas.draw_idle()          # redraw the plot
 # specify that the slider needs to
 # execute the above function when its value changes
 a_slider.on_changed(update)
-plt.show()
+plt.show() 
