@@ -3,6 +3,7 @@ import glob
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from fbprophet import Prophet
 path =r'/Users/Eloisa/Google_Drive/MWay_Comms/subset' # use your path
 allFiles = glob.glob(path + "/*.csv")
 frame = pd.DataFrame()
@@ -44,3 +45,14 @@ dframe2 = dframe1.reset_index()
 #plot avg speed against time
 plt.plot(dframe2['datetime'], dframe2['avg_speed'])
 plt.show()
+
+# dframe3 = dframe2[['datetime', 'avg_speed']]
+# m = Prophet()
+# m.fit(dframe3)
+
+# future = m.make_future_dataframe(periods=24)
+# future.tail()
+# forecast = m.predict(future)
+# forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail()
+# fig1 = m.plot(forecast)
+# plt.show()
