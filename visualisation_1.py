@@ -25,9 +25,15 @@ df['avg_speed'] = df[['speedlane_1', 'speedlane_2', 'speedlane_3',
 					'speedlane_4', 'speedlane_5', 'speedlane_6',
 					'speedlane_7']].mean(axis=1)
 #change time to datetime format
-df['time'] = pd.to_datetime(df['time'],format= '%H:%M' ).dt.time
-df['congested'] = df['avg_speed'].apply(lambda x: x < 60)
-group_by_time = df.groupby(['time', 'congested'])
-count_congested = group_by_time.size().unstack()
-count_congested.plot(kind='barh', stacked=True)
-plt.show()
+df["date"] = df["date"].map(str) + " " + df["time"]
+import pdb; pdb.set_trace()
+df["date"] = pd.to_datetime(df["date"],format="%d-%m-%y %H:%M")
+df = df.drop(columns='time')
+df = df.rename(columns = {'date':'datetime'})
+print(df['datetime'])
+# df['time'] = pd.to_datetime(df['time'],format= '%H:%M' ).dt.time
+# df['congested'] = df['avg_speed'].apply(lambda x: x < 60)
+# group_by_time = df.groupby(['time', 'congested'])
+# count_congested = group_by_time.size().unstack()
+# count_congested.plot(kind='barh', stacked=True)
+# plt.show()
