@@ -2,6 +2,7 @@
 import glob
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 path =r'/Users/Eloisa/Google_Drive/MWay_Comms/subset' # use your path
 allFiles = glob.glob(path + "/*.csv")
 frame = pd.DataFrame()
@@ -38,5 +39,8 @@ dframe['avg_speed'] = dframe.avg_speed.resample('30min').mean()
 dframe = dframe[np.isfinite(dframe['avg_speed'])]
 #select several geographic addresses and take an average of the speeds across them
 dframe1 = dframe[dframe['geographic_address'].isin(['M42/6292A', 'M42/6293A', 'M42/6294A'])]
-dframe1 = dframe1.groupby('datetime').mean()
-print(dframe1)
+dframe1 = dframe1.groupby(pd.Grouper('datetime')).mean()
+dframe2 = dframe1.reset_index()
+#plot avg speed against time
+plt.plot(dframe2['datetime'], dframe2['avg_speed'])
+plt.show()
