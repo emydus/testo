@@ -36,3 +36,7 @@ dframe = dframe.set_index(pd.DatetimeIndex(dframe['datetime']))
 #average speed over 30min intervals
 dframe['avg_speed'] = dframe.avg_speed.resample('30min').mean()
 dframe = dframe[np.isfinite(dframe['avg_speed'])]
+#select several geographic addresses and take an average of the speeds across them
+dframe1 = dframe[dframe['geographic_address'].isin(['M42/6292A', 'M42/6293A', 'M42/6294A'])]
+dframe1 = dframe1.groupby('datetime').mean()
+print(dframe1)
