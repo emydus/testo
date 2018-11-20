@@ -63,8 +63,12 @@ dframe["date"] = pd.to_datetime(dframe["date"],format="%d/%m/%y %H:%M")
 dframe = dframe.drop(columns='time')
 dframe = dframe.rename(columns = {'date':'datetime'})
 
+#calculate average occupancy accross all lanes
+dframe['avg_occupancy'] = dframe[['occupancylane_1', 'occupancylane_2', 'occupancylane_3',
+					'occupancylane_4', 'occupancylane_5', 'occupancylane_6',
+					'occupancylane_7']].mean(axis=1)
 #calculate average speed across lanes
-df['avg_speed'] = df[['speedlane_1', 'speedlane_2', 'speedlane_3',
+dframe['avg_speed'] = dframe[['speedlane_1', 'speedlane_2', 'speedlane_3',
 					'speedlane_4', 'speedlane_5', 'speedlane_6',
 					'speedlane_7']].mean(axis=1)
 #All of named var excluding avg
@@ -75,24 +79,20 @@ occupancy_all=['occupancylane_1', 'occupancylane_2', 'occupancylane_3','occupanc
 headway_all=['headwaylane_1','headwaylane_2','headwaylane_3','headwaylane_4','headwaylane_5','headwaylane_6','headwaylane_7']
 lane_data_all=[speed_all,flow_all_lane,occupancy_all,headway_all]
 
-#calculate average occupancy accross all lanes
-df['avg_occupancy'] = df[['occupancylane_1', 'occupancylane_2', 'occupancylane_3',
-					'occupancylane_4', 'occupancylane_5', 'occupancylane_6',
-					'occupancylane_7']].mean(axis=1)
-
+'''
 def group(column):
 	"""
 	Group by column and create separate dataframes
 	"""
-	grouped = df.groupby(column)
-	dframe = {}
+	grouped = dframe.groupby(column)
+	dframe1 = {}
 	for name, group in grouped:
 		dframe[name] = group
-	return(dframe)
-dframe = group('geographic_address')
+	return(dframe1)
+dframe1 = group('geographic_address')
 
 #Sensors=list(set(df['geographic_address'])) # Dated Below should preserve order
-Sensors=list(dict.fromkeys(df['geographic_address']))
+Sensors=list(dict.fromkeys(dframe['geographic_address']))
 
 
 #Convert Sensors list into indexed pandas dataframe
@@ -133,6 +133,7 @@ def SpeedOccupancy(sensor1,sensor2):
         del LinePlot   
         del speeds
     plt.show()
+'''
 
 #Speedtime('M42/6190A','M42/6200A')
 #print(df[speed_all[0:4]].describe(include=[np.number]))
@@ -140,7 +141,7 @@ for LData in lane_data_all:
     a=1
     for i in LData:
         #plt.subplot(1,4,a)
-        df[i].plot.hist(bins=59,rwidth=0.9)
+        dframe[i].plot.hist(bins=59,rwidth=0.9)
         plt.title('LData')
         plt.legend()
         a+=1
