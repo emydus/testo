@@ -1,4 +1,3 @@
-
 import glob
 import pandas as pd
 import numpy as np
@@ -24,11 +23,6 @@ dframe = pd.concat(list_)
 #change header names to remove white spaces
 dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
 dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
-# #convert to datetime
-# dframe["date"] = dframe["date"].map(str) + " " + dframe["time"]
-# dframe["date"] = pd.to_datetime(dframe["date"],format="%d/%m/%y %H:%M")
-# dframe = dframe.drop(columns='time')
-# dframe = dframe.rename(columns = {'date':'datetime'})
 
 def averagevar(variable):
 	"""
@@ -43,33 +37,10 @@ averagevar('speed')
 averagevar('occupancy')
 averagevar('flow')
 
-#set index to datetime index
-# dframe = dframe.set_index(pd.DatetimeIndex(dframe['datetime']))
-#average speed over 30min intervals
-# dframe['avg_speed'] = dframe.avg_speed.resample('10min').mean()
-# dframe = dframe[np.isfinite(dframe['avg_speed'])]
-#select several geographic addresses and take an average of the speeds across them
-# dframe1 = dframe[dframe['geographic_address'].isin(['M42/6292A', 'M42/6293A', 'M42/6294A'])]
-# dframe1 = dframe1.groupby(pd.Grouper('datetime')).mean()
-# dframe2 = dframe1.reset_index()
-#plot avg speed against time
-# avg_flow = plt.plot(dframe2['datetime'], dframe2['avg_flow'])
-# avg_occupancy = plt.plot(dframe2['datetime'], dframe2['avg_occupancy'])
-# plt.legend()
-# plt.show()
-
+#plot average speed across all days for each time
 dframe["time"] = pd.to_datetime(dframe["time"],format="%H:%M")
 dframe = dframe.groupby(pd.Grouper('time')).mean()
 print(dframe)
 dframe2 = dframe.reset_index()
 plt.plot(dframe2['time'], dframe2['avg_speed'])
 plt.show()
-# dframe3 = dframe2[['datetime', 'avg_speed']]
-# dframe3 = dframe3.rename(columns = {'datetime':'ds', 'avg_speed':'y'})
-# m = Prophet(changepoint_prior_scale=0.01).fit(dframe3)
-# future = m.make_future_dataframe(periods=300, freq='H')
-# fcst = m.predict(future)
-# fig = m.plot(fcst)
-# plt.show()
-
-
