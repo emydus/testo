@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import bokeh
 
 """
 yjt: Finding relative paths to data
@@ -15,7 +16,8 @@ So you can customise this code to find your data :)
 """
 
 gdrive = os.path.dirname(os.path.dirname(__file__))
-data = os.path.join(gdrive, 'M42 A Carriageway 40091017.tcd.csv')
+dataA = os.path.join(gdrive, 'M42 A Carriageway 40091017.tcd.csv')
+dataB = os.path.join(gdrive, 'M42 B Carriageway 40091017.tcd.csv')
 #print(gdrive,'\n',data) # FOR DEMONSTRATION
 
 """
@@ -24,7 +26,9 @@ c. Eloisa Paver
 
 # Import data as a panda dataframe (ADJUSTED TO REMOVE EMPTY COLUMNS / LANES,
 # ADDED EXTRA IDENTIFIER COLUMNS)
-df = pd.read_csv(data,
+
+def data_pdreadin(data):
+    df = pd.read_csv(data,
 	usecols = ['Geographic Address','CO Address','LCC Address','Transponder Address',
     'Device Address','Date','Time','Number of Lanes','Flow(Category 1)', 
 	'Flow(Category 2)','Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)', 
@@ -33,12 +37,16 @@ df = pd.read_csv(data,
 	'Occupancy(Lane 3)','Occupancy(Lane 4)','Headway(Lane 1)','Headway(Lane 2)',
     'Headway(Lane 3)','Headway(Lane 4)'],
     na_values = ['-1','0.0'])
+    return df
+
+dfA = data_pdreadin(dataA)
+dfB = data_pdreadin(dataB)
 
 # Change header names to remove white spaces
-df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
-df.columns = df.columns.str.replace('(', '').str.replace(')', '')
-
-#print(df.columns)
+def varname_format(dataf):
+    dataf.columns = dataf.columns.str.strip().str.lower().str.replace(' ', '_')
+    dataf.columns = dataf.columns.str.replace('(', '').str.replace(')', '')
+    return dataf
 
 # combining date and time to a date-time format and removing time column
 # =============================================================================
@@ -46,91 +54,96 @@ df.columns = df.columns.str.replace('(', '').str.replace(')', '')
 # =============================================================================
 # inefficient code above
 
-df["date"] = df["date"].map(str) + " " + df["time"]
-df["date"] = pd.to_datetime(df["date"],format="%d-%m-%y %H:%M")
-df = df.drop(columns='time')
+def datetime_format(dataf):
+    dataf["date"] = dataf["date"].map(str) + " " + dataf["time"]
+    dataf["date"] = pd.to_datetime(dataf["date"],format="%d-%m-%y %H:%M")
+    dataf = dataf.drop(columns='time')
+    return dataf
 
 # Condensing identifying info into identifier column, renaming to datetime
-
-df["geographic_address"] = (pd.Series(data = df["geographic_address"].map(str)+" "+
-  df["co_address"].map(str)+" "+df["lcc_address"].map(str)+" "+
-  df["transponder_address"].map(str)+" "+df["device_address"].map(str)))
-df = df.drop(columns=["co_address","lcc_address","transponder_address",
+def column_format(dataf):
+#    df["geographic_address"] = (pd.Series(data = df["geographic_address"].map(str)+" "+
+#    df["co_address"].map(str)+" "+df["lcc_address"].map(str)+" "+
+#    df["transponder_address"].map(str)+" "+df["device_address"].map(str)))
+    dataf = dataf.drop(columns=["co_address","lcc_address","transponder_address",
                       "device_address"])
-df = df.rename(columns = {'geographic_address':'identity',"date":"datetime"})
+    dataf = dataf.rename(columns = {'geographic_address':'identity',"date":"datetime"})    
+    return dataf
 
-def group(column):
-	"""
-    Group by column and create separate dataframes
-	dframe is a dictionary with the identifiers as keys, values as dataframes
-    Seems to run quite slowly when called D:
-    c. Tom
-    """
-	grouped = df.groupby(column)
-	dframe = {}
-	for name, group in grouped:
-		dframe[name] = group
-	return(dframe)
+def data_cleanse(dataf):
+    dataf = varname_format(dataf)
+    dataf = datetime_format(dataf)
+    dataf = column_format(dataf)
+    return dataf
 
-dframe = group('identity')
+dfA = data_cleanse(dfA)
+dfB = data_cleanse(dfB)
 
-print(dframe)
+#def group(column):
+#	"""
+#    Group by column and create separate dataframes
+#	dframe is a dictionary with the identifiers as keys, values as dataframes
+#    Seems to run quite slowly when called D:
+#    c. Tom
+#    """
+#	grouped = df.groupby(column)
+#	dframe = {}
+#	for name, group in grouped:
+#		dframe[name] = group
+#	return(dframe)
 
-sensors = list(dict.fromkeys(df["identity"]))
+"""
+Replacement code for the above. grouped is a GroupBy object that isn't computed until
+operated on. It should be better to operate on the separate groups through groupby
+functions.
+"""
+# Create dictionary of keys(0,1,...189) and ids (M42/6111A...M42/6738J)
+def sensorsD(dataf):
+    sensors = list(dict.fromkeys(dataf["identity"]))
+    sensorsD = {}
+    index = 0
+    for id in sensors:
+        sensorsD[index] = id
+        index += 1
+    return sensorsD
 
-#for i in df:
-    
+sensorDictA = sensorsD(dfA)
+sensorDictB = sensorsD(dfB)
 
-#SensorFrame = pd.DataFrame(data=Sensors,index=Sensors)
-#print(SensorFrame)
+# df_grouped (Create GroupBy object)
+id_groupedA = dfA.groupby("identity",sort=False)
+id_groupedB = dfB.groupby("identity",sort=False)
 
-# Using .describe to get basic analysis (mean of all variables)
-# =============================================================================
-# data_a = pd.DataFrame(df.describe(include='float'))
-# print(data_a.loc["min"])
-# =============================================================================
+def groupchoiceA(index):
+    return id_groupedA.get_group(sensorDictA[index])
 
+def groupchoiceB(index):
+    return id_groupedB.get_group(sensorDictB[index])
+
+#print(groupchoiceA(36))
+
+# Choosing groups by sensorsD[0,1,2...189] # DEMONSTRATION
+#print(id_groupedA.size())
 """
 Task 2: Functions to define plotting everything against everything else
+(given) columns -> (sensor) identity, datetime, no. of lanes, flow by category(averaged 
+across lanes, 4 categories), (speed, flow, occupancy, headway) x 4 = 16
+23 initial columns
 """
 
+def carriage_mean(dataf,column_name):
+    dataf['avg_' + column_name] = dataf[[column_name + 'lane_1', column_name + 'lane_2', 
+         column_name + 'lane_3', column_name + 'lane_4']].mean(axis=1)
+    return dataf
 
+dfA = carriage_mean(dfA,'speed')
+dfA = carriage_mean(dfA,'flow')
+dfA = carriage_mean(dfA,'occupancy')
+dfA = carriage_mean(dfA,'headway')
 
-# =============================================================================
-# """
-# DONE BY TOM
-# Task 1: Comparing Tom's speed-time graphs vs occupancy-time graphs (16/10)
-# c. Tom's code w. modifications follows:
-# """
-# 
-# #calculate average speed across lanes
-# df['avg_speed'] = df[['speedlane_1', 'speedlane_2', 'speedlane_3',
-# 					'speedlane_4', 'speedlane_5', 'speedlane_6',
-# 					'speedlane_7']].mean(axis=1)
-# 
-# #change time to datetime format
-# df['time'] = pd.to_datetime(df['time'],format= '%H:%M' ).dt.time
-# def group(column):
-# 	"""
-# 	group by column and create separate dataframes
-# 	"""
-# 	grouped = df.groupby(column)
-# 	dframe = {}
-# 	for name, group in grouped:
-# 		dframe[name] = group
-# 	return(dframe)
-# dframe = group('geographic_address')
-# 
-# #Sensors=list(set(df['geographic_address'])) # Dated Below should preserve order
-# Sensors=list(dict.fromkeys(df['geographic_address']))
-# print(len(Sensors))
-# 
-# #Plots speeds against time
-# for pos in Sensors[:]:
-#     speeds= dframe[pos][['time','speedlane_1', 'speedlane_2', 'speedlane_3', 'avg_speed']]
-#     speeds = pd.melt(speeds, id_vars = ['time'], var_name = 'lane', value_name = 'speed')
-#     sns.lineplot(x = 'time', y = 'speed', hue = 'lane', data = speeds).set_title(pos)
-#     plt.show()
-#     del speeds
-# =============================================================================
+dfB = carriage_mean(dfB,'speed')
+dfB = carriage_mean(dfB,'flow')
+dfB = carriage_mean(dfB,'occupancy')
+dfB = carriage_mean(dfB,'headway')
 
+plt.matshow(dfA.corr(method='pearson'))
