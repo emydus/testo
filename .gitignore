@@ -1,0 +1,6 @@
+# generated images
+*.png
+
+# datasets
+*.tcd.csv
+*.xlsx

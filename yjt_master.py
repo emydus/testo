@@ -15,9 +15,9 @@ os.path.join() searches for the file in subdirectories, like so:
 So you can customise this code to find your data :)
 """
 
-gdrive = os.path.dirname(os.path.dirname(__file__))
-dataA = os.path.join(gdrive, 'M42 A Carriageway 40091017.tcd.csv')
-dataB = os.path.join(gdrive, 'M42 B Carriageway 40091017.tcd.csv')
+workingDirectory = os.path.dirname(__file__)
+dataA = os.path.join(workingDirectory,"Data", 'M42 A Carriageway 40091017.tcd.csv')
+dataB = os.path.join(workingDirectory,"Data", 'M42 B Carriageway 40091017.tcd.csv')
 #print(gdrive,'\n',data) # FOR DEMONSTRATION
 
 """
