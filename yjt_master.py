@@ -7,7 +7,7 @@ import bokeh
 
 """
 yjt: Finding relative paths to data
-'gdrive' is the relative path to our working directory, 'MWay Comms Project Group'
+'workdir' is the relative path to our working directory, 'PHY346_MWayComms'
 __file__ gives the absolute path to the script file.
 Each os.path.dirname() call gives the directory above it.
 os.path.join() searches for the file in subdirectories, like so:
@@ -15,9 +15,9 @@ os.path.join() searches for the file in subdirectories, like so:
 So you can customise this code to find your data :)
 """
 
-workingDirectory = os.path.dirname(__file__)
-dataA = os.path.join(workingDirectory,"Data", 'M42 A Carriageway 40091017.tcd.csv')
-dataB = os.path.join(workingDirectory,"Data", 'M42 B Carriageway 40091017.tcd.csv')
+workdir = os.path.dirname(__file__)
+dataA = os.path.join(workdir,"data", 'M42 A Carriageway 40091017.tcd.csv')
+dataB = os.path.join(workdir,"data", 'M42 B Carriageway 40091017.tcd.csv')
 #print(gdrive,'\n',data) # FOR DEMONSTRATION
 
 """
