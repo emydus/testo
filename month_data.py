@@ -8,12 +8,15 @@ from fbprophet.diagnostics import cross_validation
 from fbprophet.plot import plot_cross_validation_metric
 
 def main():
-    path =r'/Users/Eloisa/Google_Drive/MWay_Comms/subset' # use your path
+    path =r'/Users/Eloisa/Google_Drive/MWay_Comms/Oct_2018' # use your path
     allFiles = glob.glob(path + "/*.csv")
     dframe = loadfiles(allFiles)
-    dframe2 = averagevar(dframe, 'speed')
-    import pdb; pdb.set_trace()
-    fb_forecast(dframe)
+    dframe = averagevar(dframe, 'speed')
+    dframe = averagevar(dframe, 'flow')
+    dframe = averagevar(dframe, 'occupancy')
+    drop_dates(dframe)
+    dframe2 = occupancy_flow(dframe)
+    fb_forecast(dframe2)
     return
 
 def loadfiles(allFiles):
@@ -49,7 +52,7 @@ def averagevar(dframe, variable):
     dframe['avg_'+ variable] = dframe[[variable +'lane_1', variable + 'lane_2', variable + 'lane_3',
                     variable + 'lane_4', variable + 'lane_5', variable + 'lane_6',
                     variable + 'lane_7']].mean(axis=1)
-    return dframe['avg_'+variable]
+    return dframe
 
 def occupancy_flow(dframe):
     """plot occupancy and flow against time to observe relationship"""
@@ -69,17 +72,24 @@ def occupancy_flow(dframe):
     # plt.show()
     return dframe2
 
+def drop_dates(dframe):
+    drop_list = [pd.to_datetime(2018-10-20)]
+    dframe = dframe.drop(drop_list)
+    print(dframe)
+
 def fb_forecast(dframe2):
     """Uses Facebook prophet API to predict future traffic data"""
-    dframe2 = dframe2[np.isfinite(dframe2['avg_speed'])]
     dframe3 = dframe2[['datetime', 'avg_speed']]
     dframe3 = dframe3.rename(columns = {'datetime':'ds', 'avg_speed':'y'})
     m = Prophet(changepoint_prior_scale=0.01).fit(dframe3)
     future = m.make_future_dataframe(periods=300, freq='H')
-    import pdb; pdb.set_trace()
     fcst = m.predict(future)
+    import pdb; pdb.set
     fig = m.plot(fcst)
     plt.show()
+    return fcst
+
+# def fb_forecast(test)
 
 
 main()
