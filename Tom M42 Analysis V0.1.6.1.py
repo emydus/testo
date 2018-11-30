@@ -8,27 +8,6 @@ ISSUES V0.1.4
 - Subplot system may need tweaking
 - Possible redundancy of the "datetime" module
 '''  
-'''
-import pandas as pd 
-import seaborn as sns
-import matplotlib.pyplot as plt
-import numpy as np
-import datetime as date
-
-#import data as a panda dataframe
-df = pd.read_csv('M42 A Carriageway 40091017.tcd.csv',
-	usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Flow(Category 1)', 
-	'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)', 
-	'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
-	'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)', 
-	'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)', 
-	'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)', 
-	'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)', 
-	'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
-	na_values = ['-1','0'])
-#change header names to remove white spaces
-df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_').str.replace('(', '').str.replace(')', '')
-'''
 #%%
 import glob
 import seaborn as sns
