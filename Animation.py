@@ -1,10 +1,10 @@
 
-import pandas as pd 
+import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import datetime
 import numpy as np
-import os 
+import os
 import math
 
 #Find relative path to data (see Misc / yjt_master.py)
@@ -12,13 +12,13 @@ gdrive = os.path.dirname(os.path.dirname(__file__))
 data = os.path.join(gdrive, 'M42 A Carriageway 40091017.tcd.csv')
 
 #import data as a panda dataframe
-df = pd.read_csv(data, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Flow(Category 1)', 
-	'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)', 
+df = pd.read_csv(data, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Flow(Category 1)',
+	'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)',
 	'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
-	'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)', 
-	'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)', 
-	'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)', 
-	'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)', 
+	'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
+	'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
+	'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
+	'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
 	'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
 	na_values = ['-1', '0.0'])
 
@@ -53,14 +53,14 @@ dfgeo_add = group('geographic_address')
 
 Sensors=list(dict.fromkeys(df['geographic_address']))
 
-#Flag sensor areas where there are sliproads 
+#Flag sensor areas where there are sliproads
 Sliplist = []
 for Sensor in Sensors:
     if "K" in Sensor:
         Sliplist.append(Sensor)
     elif "J" in Sensor:
         Sliplist.append(Sensor)
-    
+
 # =============================================================================
 # '''Eloisa I leave the commented out code below for you to delete if you deem it fit to go - Titus'''
 # # select columns from sensor dataset
@@ -76,7 +76,7 @@ for Sensor in Sensors:
 def sensspeed(sensorname):
     '''Takes the name of a sensor, outputs the speed data for all times, ready for plotting.
     Make sure input is of the from: 'M42/6111A' (ie uses slashes, not underscores).'''
-    
+
     SensorSpeeds = dfgeo_add[sensorname][['time','speedlane_1', 'speedlane_2', 'speedlane_3', 'avg_speed']]
     SensorSpeeds = pd.melt(SensorSpeeds, id_vars = ['time'], var_name = 'lane', value_name = 'speed')
     return SensorSpeeds
@@ -89,8 +89,8 @@ def sensspeed(sensorname):
 # =============================================================================
 # #select columns from time dataset
 # eight_thirty_speeds = dframe[datetime.time(8,30)][['geographic_address', 'speedlane_1', 'speedlane_2', 'avg_speed']]
-# 
-# 
+#
+#
 # #put dataframe into a format readable for Seaborn visualisation
 # eight_thirty_speeds = pd.melt(eight_thirty_speeds, id_vars = ['geographic_address'], var_name = 'lane', value_name = 'speed')
 # =============================================================================
@@ -125,18 +125,18 @@ def speedtimeslice(hour, minute, n):
     axes.set_ylim([0,170])
     axes.set_xlim(stdframe(hour,minute).iloc[0,0],stdframe(hour,minute).iloc[-1,0])
     axes.set_title('%s:%s'%(hour,minute))
-    
+
     plt.legend(loc=3, fontsize='x-small')
-    
-    
+
+
     #plot vertical lines at sliproad sensors
     # On: K, M // Off: J, L
     for sensor in Sensors:
         if sensor in Sliplist:
-            if "K" in sensor: 
-                plt.axvline(sensor, color="b", linewidth=0.4) 
-            elif "J" in sensor: 
-                plt.axvline(sensor, color="r", linewidth=0.4) 
+            if "K" in sensor:
+                plt.axvline(sensor, color="b", linewidth=0.4)
+            elif "J" in sensor:
+                plt.axvline(sensor, color="r", linewidth=0.4)
     plt.savefig('%s.png'%(n), dpi=300)
     plt.clf()
 
@@ -152,18 +152,18 @@ def occutimeslice(hour, minute, n):
     axes.set_ylim([0,110])
     axes.set_xlim(stdframe(hour,minute).iloc[0,0],stdframe(hour,minute).iloc[-1,0])
     axes.set_title('%s:%s'%(hour,minute))
-    
+
     plt.legend(loc=3, fontsize='x-small')
-    
-    
+
+
     #plot vertical lines at sliproad sensors
     # On: K, M (Blue)// Off: J, L(Red)
     for sensor in Sensors:
         if sensor in Sliplist:
-            if "K" in sensor: 
-                plt.axvline(sensor, color="b", linewidth=0.4) 
-            elif "J" in sensor: 
-                plt.axvline(sensor, color="r", linewidth=0.4) 
+            if "K" in sensor:
+                plt.axvline(sensor, color="b", linewidth=0.4)
+            elif "J" in sensor:
+                plt.axvline(sensor, color="r", linewidth=0.4)
     plt.savefig('%s.png'%(n), dpi=300)
     plt.clf()
 
@@ -176,3 +176,4 @@ def exportallslices(function):
             function(hour,minute,n)
 
 exportallslices(occutimeslice)
+#TestChange?
