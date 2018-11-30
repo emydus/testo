@@ -79,12 +79,11 @@ flow_all_lane=['flowlane_1','flowlane_2','flowlane_3','flowlane_4','flowlane_5',
 flow_all_cats=['flowcategory_1','flowcategory_2','flowcategory_3']
 occupancy_all=['avg_occupancy','occupancylane_1', 'occupancylane_2', 'occupancylane_3','occupancylane_4', 'occupancylane_5', 'occupancylane_6','occupancylane_7']
 headway_all=['avg_headway','headwaylane_1','headwaylane_2','headwaylane_3','headwaylane_4','headwaylane_5','headwaylane_6','headwaylane_7']
-flow_total=dframe[flow_all_lane].sum('time')
+dframe['flow_total']=dframe[flow_all_lane].sum(axis=1)
 lane_data_all=[speed_all,flow_all_lane,occupancy_all,headway_all]
 print('Data Loaded')
-print(flow_total)
 #%%
-'''
+
 def group(column):
 	"""
 	Group by column and create separate dataframes
@@ -98,8 +97,8 @@ dframe1 = group('geographic_address')
 
 #Sensors=list(set(df['geographic_address'])) # Dated Below should preserve order
 Sensors=list(dict.fromkeys(dframe['geographic_address']))
-
-
+#%%
+'''
 #Convert Sensors list into indexed pandas dataframe
 SensorFrame = pd.DataFrame(data=Sensors,index=Sensors)
 
@@ -157,4 +156,7 @@ for LData in lane_data_all:
     for i in LData[0:5]:
         print(dframe[i].describe([.99,.95,.75,.5,.25,.05,.01]))
 #%%
-
+dframe['flow_total'].plot.hist(bins=57,rwidth=0.9)
+plt.title('Total Flow')
+#%%
+dframe1['flow_total'].plot.line()
