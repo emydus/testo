@@ -1,4 +1,4 @@
-import pandas as pd 
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -30,10 +30,10 @@ c. Eloisa Paver
 def data_pdreadin(data):
     df = pd.read_csv(data,
 	usecols = ['Geographic Address','CO Address','LCC Address','Transponder Address',
-    'Device Address','Date','Time','Number of Lanes','Flow(Category 1)', 
-	'Flow(Category 2)','Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)', 
+    'Device Address','Date','Time','Number of Lanes','Flow(Category 1)',
+	'Flow(Category 2)','Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)',
 	'Speed(Lane 2)','Speed(Lane 3)','Speed(Lane 4)','Flow(Lane 1)','Flow(Lane 2)',
-    'Flow(Lane 3)','Flow(Lane 4)','Occupancy(Lane 1)','Occupancy(Lane 2)', 
+    'Flow(Lane 3)','Flow(Lane 4)','Occupancy(Lane 1)','Occupancy(Lane 2)',
 	'Occupancy(Lane 3)','Occupancy(Lane 4)','Headway(Lane 1)','Headway(Lane 2)',
     'Headway(Lane 3)','Headway(Lane 4)'],
     na_values = ['-1','0.0'])
@@ -67,7 +67,7 @@ def column_format(dataf):
 #    df["transponder_address"].map(str)+" "+df["device_address"].map(str)))
     dataf = dataf.drop(columns=["co_address","lcc_address","transponder_address",
                       "device_address"])
-    dataf = dataf.rename(columns = {'geographic_address':'identity',"date":"datetime"})    
+    dataf = dataf.rename(columns = {'geographic_address':'identity',"date":"datetime"})
     return dataf
 
 def data_cleanse(dataf):
@@ -97,8 +97,11 @@ Replacement code for the above. grouped is a GroupBy object that isn't computed 
 operated on. It should be better to operate on the separate groups through groupby
 functions.
 """
-# Create dictionary of keys(0,1,...189) and ids (M42/6111A...M42/6738J)
 def sensorsD(dataf):
+    """
+    Create dictionary of keys and ids e.g for M42 A Carriageway 40091017,
+    (0,1,...189) & (M42/6111A...M42/6738J)
+    """
     sensors = list(dict.fromkeys(dataf["identity"]))
     sensorsD = {}
     index = 0
@@ -126,13 +129,13 @@ def groupchoiceB(index):
 #print(id_groupedA.size())
 """
 Task 2: Functions to define plotting everything against everything else
-(given) columns -> (sensor) identity, datetime, no. of lanes, flow by category(averaged 
+(given) columns -> (sensor) identity, datetime, no. of lanes, flow by category(averaged
 across lanes, 4 categories), (speed, flow, occupancy, headway) x 4 = 16
 23 initial columns
 """
 
 def carriage_mean(dataf,column_name):
-    dataf['avg_' + column_name] = dataf[[column_name + 'lane_1', column_name + 'lane_2', 
+    dataf['avg_' + column_name] = dataf[[column_name + 'lane_1', column_name + 'lane_2',
          column_name + 'lane_3', column_name + 'lane_4']].mean(axis=1)
     return dataf
 
