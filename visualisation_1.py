@@ -31,6 +31,7 @@ df["date"] = pd.to_datetime(df["date"],format="%d-%m-%y %H:%M")
 df = df.drop(columns='time')
 df = df.rename(columns = {'date':'datetime'})
 print(df['datetime'])
+
 # df['time'] = pd.to_datetime(df['time'],format= '%H:%M' ).dt.time
 # df['congested'] = df['avg_speed'].apply(lambda x: x < 60)
 # group_by_time = df.groupby(['time', 'congested'])

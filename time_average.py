@@ -44,3 +44,5 @@ print(dframe)
 dframe2 = dframe.reset_index()
 plt.plot(dframe2['time'], dframe2['avg_speed'])
 plt.show()
+
+
