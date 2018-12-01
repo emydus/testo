@@ -8,8 +8,22 @@ Created on Sat Dec  1 16:11:24 2018
 import os
 from pathlib import Path
 
+# Should print a relative path to file
 print(__file__)
-print(os.path.abspath(__file__))
-p = Path("yjt_master.py")
+
+# Should ALSO print a relative path to file
+p = Path(__file__)
 p = p.resolve(strict=True)
 print(p)
+
+# Should give the current working directory
+cwd = os.path.dirname(__file__)
+
+# Should ALSO give the current working directory
+q = Path.cwd()
+print(q)
+q = q.resolve(strict=True)
+print(q)
+
+#print(sorted(Path(".").glob("*.py")))
+#print(os.path.basename(__file__))
