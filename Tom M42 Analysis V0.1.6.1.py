@@ -15,11 +15,15 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import datetime as date
+import os
 #from fbprophet import Prophet
-path =r'C:\D Drive temp backup\Uni\3rd Year\MWay Comms Project Group\DATA for sheffield UNI' # use your path
-allFiles = glob.glob(path + "/*.csv")
+
+workdir = os.path.dirname(__file__)
+datafolderpath = os.path.join(workdir,"data")
+allFiles = glob.glob(datafolderpath + "/*.csv")
 frame = pd.DataFrame()
 list_ = []
+
 #loop through all csv files and concatenate into a dataframe
 for file in allFiles:
     df = pd.read_csv(file, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Flow(Category 1)', 
@@ -30,12 +34,14 @@ for file in allFiles:
 	'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)', 
 	'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)', 
 	'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
-	na_values = ['-1','0'])
+	na_values = ['-1'])
     list_.append(df)
 dframe = pd.concat(list_)
+
 #change header names to remove white spaces
 dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
 dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
+
 #convert to datetime
 dframe["date"] = dframe["date"].map(str) + " " + dframe["time"]
 dframe["date"] = pd.to_datetime(dframe["date"],format="%d/%m/%y %H:%M")
@@ -46,6 +52,7 @@ dframe = dframe.rename(columns = {'date':'datetime'})
 dframe['avg_occupancy'] = dframe[['occupancylane_1', 'occupancylane_2', 'occupancylane_3',
 					'occupancylane_4', 'occupancylane_5', 'occupancylane_6',
 					'occupancylane_7']].mean(axis=1)
+
 #calculate average speed across lanes
 dframe['avg_speed'] = dframe[['speedlane_1', 'speedlane_2', 'speedlane_3',
 					'speedlane_4', 'speedlane_5', 'speedlane_6',
