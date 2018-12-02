@@ -5,25 +5,21 @@ Created on Sat Dec  1 16:11:24 2018
 
 @author: yjt_yujie
 """
-import os
+import pandas as pd
 from pathlib import Path
 
-# Should print a relative path to file
-print(__file__)
+cwd = Path.cwd()
+cwd = cwd.resolve(strict=True)
 
-# Should ALSO print a relative path to file
-p = Path(__file__)
-p = p.resolve(strict=True)
-print(p)
+datafolderpath = cwd.joinpath("data")
+print(list(datafolderpath.glob("**/*.pkl.gz")))
 
-# Should give the current working directory
-cwd = os.path.dirname(__file__)
+allfiles = list(datafolderpath.glob("**/*.pkl.gz"))
+df_list = []
 
-# Should ALSO give the current working directory
-q = Path.cwd()
-print(q)
-q = q.resolve(strict=True)
-print(q)
-
-#print(sorted(Path(".").glob("*.py")))
-#print(os.path.basename(__file__))
+for file in allfiles:
+    file = file.resolve(strict=True)
+    print(file)
+    df = pd.read_pickle(file)
+    df_list.append(df)
+    df_all = pd.concat(df_list)

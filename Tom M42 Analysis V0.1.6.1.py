@@ -9,20 +9,20 @@ ISSUES V0.1.4
 - Possible redundancy of the "datetime" module
 '''  
 #%%
-import glob
 import seaborn as sns
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import datetime as date
-import os
+from pathlib import Path
 #from fbprophet import Prophet
 
-workdir = os.path.dirname(__file__)
-datafolderpath = os.path.join(workdir,"data")
-allFiles = glob.glob(datafolderpath + "/*.csv")
-frame = pd.DataFrame()
-list_ = []
+cwd = Path.cwd()
+cwd = cwd.resolve(strict=True)
+datafolderpath = cwd.joinpath("data")
+
+allFiles = list(datafolderpath.glob("**/*.csv"))
+df_list = []
 
 #loop through all csv files and concatenate into a dataframe
 for file in allFiles:
@@ -35,8 +35,8 @@ for file in allFiles:
 	'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)', 
 	'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
 	na_values = ['-1'])
-    list_.append(df)
-dframe = pd.concat(list_)
+    df_list.append(df)
+dframe = pd.concat(df_list)
 
 #change header names to remove white spaces
 dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
