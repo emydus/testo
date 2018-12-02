@@ -6,29 +6,24 @@ Verified working
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import datetime
 import numpy as np
-import os
-import math
+from pathlib import Path
 
-#Find relative path to data (see yjt_master.py)
-workdir = os.path.dirname(__file__)
-dataA = os.path.join(workdir,"data", 'M42 A Carriageway 40091017.tcd.csv')
+#Find relative path to data (see pickle_reader.py)
+cwd = Path.cwd()
+cwd = cwd.resolve(strict=True)
+dataA = cwd.joinpath("data",'M42 A Carriageway 40091017.tcd.csv.pkl.gz')
 
 #import data as a panda dataframe
-def data_pdreadin(data):
-    df = pd.read_csv(data, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Flow(Category 1)',
-        'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)',
-        'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
-        'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
-        'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
-        'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
-        'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
-        'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
-        na_values = ['-1', '0.0'])
+def data_pdreadin(file):
+    df = pd.read_pickle(file)
+    # TO-DO : NEED TO IMPLEMENT REPLACEMENT FOR NA_VALUES=["-1","0.0"]
     #change header names to remove white spaces
     df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
     df.columns = df.columns.str.replace('(', '').str.replace(')', '')
+    #drop unwanted columns
+    df = df.drop(columns=["co_address","lcc_address","transponder_address",
+                          "device_address"])
     #datetime_format
     df["date"] = df["date"].map(str) + " " + df["time"]
     df["date"] = pd.to_datetime(df["date"],format="%d-%m-%y %H:%M")
@@ -38,6 +33,8 @@ def data_pdreadin(data):
     return df
 
 dfA = data_pdreadin(dataA)
+
+print(dfA.columns)
 
 def carriage_mean(dataf,column_name):
     dataf['avg_' + column_name] = dataf[[column_name + 'lane_1', column_name + 'lane_2',
@@ -126,7 +123,9 @@ print(sensspeed('M42/6111A'))
 #plt.show()
 
 #print(time_grouped.get_group("2017-10-09 00:58:00")["datetime"])
-'''Eloisa I leave the commented out code below for you to delete if you deem it fit to go... - Titus'''
+'''
+Eloisa I leave the commented out code below for you to delete if you deem it fit to go... - Titus
+'''
 # =============================================================================
 # #select columns from time dataset
 # eight_thirty_speeds = dframe[datetime.time(8,30)][['geographic_address', 'speedlane_1', 'speedlane_2', 'avg_speed']]
@@ -183,7 +182,7 @@ def speedtimeslice(hour, minute, n):
             plt.axvline(sensor, color="b", linewidth=0.4)
         elif "J" in sensor:
             plt.axvline(sensor, color="r", linewidth=0.4)
-    plt.savefig(os.path.join(workdir,"results",'%s.png' % (n)), dpi=300)
+    plt.savefig(cwd.joinpath("results",'%s.png' % (n)), dpi=300)
     plt.clf()
 
 def occutimeslice(hour, minute, n):
@@ -209,7 +208,7 @@ def occutimeslice(hour, minute, n):
             plt.axvline(sensor, color="b", linewidth=0.4)
         elif "J" in sensor:
             plt.axvline(sensor, color="r", linewidth=0.4)
-    plt.savefig(os.path.join(workdir,"results",'%s.png' % (n)), dpi=300)
+    plt.savefig(cwd.joinpath("results",'%s.png' % (n)), dpi=300)
     plt.clf()
 
 def exportallslices(function):
