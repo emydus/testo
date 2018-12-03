@@ -16,7 +16,7 @@ df_list = []
 
 for file in allfiles:
     file = file.resolve(strict=True)
-    print(file)
+    print("Loading %s" % (file))
     df = pd.read_pickle(file)
     df_list.append(df)
     df_all = pd.concat(df_list)
