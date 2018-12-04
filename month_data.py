@@ -7,29 +7,17 @@ from fbprophet import Prophet
 from fbprophet.diagnostics import cross_validation
 from fbprophet.plot import plot_cross_validation_metric
 
-def main():
-    path =r'/Users/Eloisa/Google_Drive/MWay_Comms/Oct_2018' # use your path
-    allFiles = glob.glob(path + "/*.csv")
-    dframe = loadfiles(allFiles)
-    dframe = averagevar(dframe, 'speed')
-    dframe = averagevar(dframe, 'flow')
-    dframe = averagevar(dframe, 'occupancy')
-    drop_dates(dframe)
-    dframe2 = occupancy_flow(dframe)
-    fb_forecast(dframe2)
-    return
-
 def loadfiles(allFiles):
     """loop through all csv files and concatenate into a dataframe"""
     list_ = []
     for file in allFiles:
-        df = pd.read_csv(file, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 
-        'Flow(Category 1)', 'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)', 
+        df = pd.read_csv(file, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes',
+        'Flow(Category 1)', 'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)',
         'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
-        'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)', 
-        'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)', 
-        'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)', 
-        'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)', 
+        'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
+        'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
+        'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
+        'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
         'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
         na_values = ['-1'])
         list_.append(df)
@@ -44,6 +32,13 @@ def loadfiles(allFiles):
     dframe = dframe.rename(columns = {'date':'datetime'})
     return dframe
 
+path =r'/Users/Eloisa/Google_Drive/MWay_Comms/Oct_2018' # use your path
+allFiles = glob.glob(path + "/*.csv")
+dframe = loadfiles(allFiles)
+
+
+# %%
+
 def averagevar(dframe, variable):
     """
     calculates the average of specified variable across lanes and creates column
@@ -56,26 +51,30 @@ def averagevar(dframe, variable):
 
 def occupancy_flow(dframe):
     """plot occupancy and flow against time to observe relationship"""
+
+    #plot avg speed against time
+    avg_flow = plt.plot(dframe['datetime'], dframe['avg_flow'])
+    avg_occupancy = plt.plot(dframe['datetime'], dframe['avg_occupancy'])
+    plt.legend()
+    plt.show()
+
+def resample_average(dframe):
+    """average speed over 30 min intervals. select several geographic addresses
+    and take an average of the speeds across them"""
     #set index to datetime index
-    dframe = dframe.set_index(pd.DatetimeIndex(dframe['datetime']))
-    #average speed over 30min intervals
-    dframe['avg_speed'] = dframe.avg_speed.resample('30min').mean()
+    # dframe = dframe.set_index(pd.DatetimeIndex(dframe['datetime']))
+    # #average speed over 30min intervals
+    # dframe['avg_speed'] = dframe.avg_speed.resample('30min').mean()
     dframe = dframe[np.isfinite(dframe['avg_speed'])]
     #select several geographic addresses and take an average of the speeds across them
     dframe1 = dframe[dframe['geographic_address'].isin(['M42/6292A', 'M42/6293A', 'M42/6294A'])]
     dframe1 = dframe1.groupby(pd.Grouper('datetime')).mean()
     dframe2 = dframe1.reset_index()
-    #plot avg speed against time
-    avg_flow = plt.plot(dframe2['datetime'], dframe2['avg_flow'])
-    avg_occupancy = plt.plot(dframe2['datetime'], dframe2['avg_occupancy'])
-    plt.legend()
-    # plt.show()
     return dframe2
 
 def drop_dates(dframe):
-    drop_list = [pd.to_datetime(2018-10-20)]
-    dframe = dframe.drop(drop_list)
-    print(dframe)
+    drop_list = dframe[dframe["datetime"].isin(pd.date_range("2018-10-1", "2018-10-20"))]
+    return drop_list
 
 def fb_forecast(dframe2):
     """Uses Facebook prophet API to predict future traffic data"""
@@ -84,19 +83,21 @@ def fb_forecast(dframe2):
     m = Prophet(changepoint_prior_scale=0.01).fit(dframe3)
     future = m.make_future_dataframe(periods=300, freq='H')
     fcst = m.predict(future)
-    import pdb; pdb.set
-    fig = m.plot(fcst)
-    plt.show()
+    # fig = m.plot(fcst)
+    # plt.show()
     return fcst
 
 # def fb_forecast(test)
 
-
-main()
+dframe = averagevar(dframe, 'speed')
+dframe = averagevar(dframe, 'flow')
+dframe = averagevar(dframe, 'occupancy')
+dframe_drop = drop_dates(dframe)
+dframe_drop2 = resample_average(dframe)
+forecast = fb_forecast(dframe_drop2)
 
 
 
 # df_cv = cross_validation(m, initial='4 days', period='9 days', horizon = '4 days')
 # df_cv.head()
 # fig = plot_cross_validation_metric(df_cv, metric='mape')
-
