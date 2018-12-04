@@ -18,7 +18,7 @@ datafolderpath = cwd.joinpath("data")
 allfiles = list(datafolderpath.glob("**/*.csv"))
 
 for file in allfiles:
-    print("Loading %s" % (file))
+    print("Loading %s" % (file.name))
     df = pd.read_csv(file)
-    print("Compressing %s" % (file))
+    print("Compressing %s" % (file.name))
     df.to_pickle("%s.pkl.gz" % (file))
