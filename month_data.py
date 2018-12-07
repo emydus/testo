@@ -3,10 +3,16 @@ import glob
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 from fbprophet import Prophet
 from fbprophet.diagnostics import cross_validation
 from fbprophet.plot import plot_cross_validation_metric
+import seaborn as sns
 
+
+# workdir = os.path.dirname(__file__)
+# datafolderpath = os.path.join(workdir,"data")
+# allFiles = glob.glob(datafolderpath + "/*.csv")
 def loadfiles(allFiles):
     """loop through all csv files and concatenate into a dataframe"""
     list_ = []
@@ -32,7 +38,7 @@ def loadfiles(allFiles):
     dframe = dframe.rename(columns = {'date':'datetime'})
     return dframe
 
-path =r'/Users/Eloisa/Google_Drive/MWay_Comms/Oct_2018' # use your path
+path =r'/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018' # use your path
 allFiles = glob.glob(path + "/*.csv")
 dframe = loadfiles(allFiles)
 
@@ -47,7 +53,7 @@ def averagevar(dframe, variable):
     dframe['avg_'+ variable] = dframe[[variable +'lane_1', variable + 'lane_2', variable + 'lane_3',
                     variable + 'lane_4', variable + 'lane_5', variable + 'lane_6',
                     variable + 'lane_7']].mean(axis=1)
-    return dframe
+    return dframe['avg_'+ variable]
 
 def occupancy_flow(dframe):
     """plot occupancy and flow against time to observe relationship"""
@@ -62,9 +68,9 @@ def resample_average(dframe):
     """average speed over 30 min intervals. select several geographic addresses
     and take an average of the speeds across them"""
     #set index to datetime index
-    # dframe = dframe.set_index(pd.DatetimeIndex(dframe['datetime']))
-    # #average speed over 30min intervals
-    # dframe['avg_speed'] = dframe.avg_speed.resample('30min').mean()
+    dframe = dframe.set_index(pd.DatetimeIndex(dframe['datetime']))
+    #average speed over 30min intervals
+    dframe['avg_speed'] = dframe.avg_speed.resample('10min').mean()
     dframe = dframe[np.isfinite(dframe['avg_speed'])]
     #select several geographic addresses and take an average of the speeds across them
     dframe1 = dframe[dframe['geographic_address'].isin(['M42/6292A', 'M42/6293A', 'M42/6294A'])]
@@ -88,16 +94,39 @@ def fb_forecast(dframe2):
     return fcst
 
 # def fb_forecast(test)
+averagevar(dframe, 'speed')
+dframe = resample_average(dframe)
+# dframe_drop = drop_dates(dframe)
+# forecast = fb_forecast(dframe)
 
-dframe = averagevar(dframe, 'speed')
-dframe = averagevar(dframe, 'flow')
-dframe = averagevar(dframe, 'occupancy')
-dframe_drop = drop_dates(dframe)
-dframe_drop2 = resample_average(dframe)
-forecast = fb_forecast(dframe_drop2)
+def forecast_test(forecast, dframe2):
+    forecast = forecast.rename(columns = {'ds':'datetime1', 'yhat':'avg_speed1'})
+    forecast = forecast[['datetime1', 'avg_speed1']]
+    dframe2 = dframe[['datetime', 'avg_speed']]
+    merged_df = forecast.merge(dframe2, left_on='datetime1', right_on='datetime', how='inner')
+    actual_traffic = merged_df['avg_speed']
+    forecasted_traffic = merged_df['avg_speed1']
+    merged_df['normalised_residual'] = ((actual_traffic - forecasted_traffic)/actual_traffic) * 100
+    sns.distplot(merged_df['normalised_residual'])
+    plt.show()
 
+
+def probability_(dframe):
+    sns.distplot(dframe['avg_speed'])
+    plt.show()
+
+dframe = dframe[np.isfinite(dframe['speedlane_1'])]
+sns.distplot(dframe['speedlane_1'])
+plt.show()
+# plt.plot(merged_df['datetime'], actual_traffic, label = 'actual traffic')
+# plt.plot(merged_df['datetime'], forecasted_traffic, label = 'forecasted traffic')
+# plt.legend()
+# plt.xlabel('Time')
+# plt.ylabel('Average Speed')
+# plt.show()
 
 
 # df_cv = cross_validation(m, initial='4 days', period='9 days', horizon = '4 days')
 # df_cv.head()
 # fig = plot_cross_validation_metric(df_cv, metric='mape')
+

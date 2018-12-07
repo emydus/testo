@@ -2,11 +2,15 @@ import glob
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from fbprophet import Prophet
-path =r'/Users/Eloisa/Google_Drive/MWay_Comms/subset' # use your path
-allFiles = glob.glob(path + "/*.csv")
+import os
+
+workdir = os.path.dirname(__file__)
+datafolderpath = os.path.join(workdir,"data")
+allFiles = glob.glob(datafolderpath + "/*.csv")
+
 frame = pd.DataFrame()
 list_ = []
+
 #loop through all csv files and concatenate into a dataframe
 for file in allFiles:
     df = pd.read_csv(file, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Flow(Category 1)', 

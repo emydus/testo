@@ -3,37 +3,48 @@ import numpy as np
 import matplotlib.pyplot as plt
 from math import pi
 import pandas as pd 
-import datetime
+import os
+
+#Find relative path to data (see yjt_master.py)
+workdir = os.path.dirname(__file__)
+dataA = os.path.join(workdir,"data", 'M42 A Carriageway 40091017.tcd.csv')
+
 #import data as a panda dataframe
-df = pd.read_csv('M42 A Carriageway 40091017.tcd.csv',
-	usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Flow(Category 1)', 
-	'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)', 
-	'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
-	'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)', 
-	'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)', 
-	'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)', 
-	'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)', 
-	'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
-	na_values = ['-1'])
-#change header names to remove white spaces
-df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_').str.replace('(', '').str.replace(')', '')
+def data_pdreadin(data):
+    df = pd.read_csv(data, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Flow(Category 1)',
+        'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)',
+        'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
+        'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
+        'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
+        'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
+        'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
+        'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
+        na_values = ['-1'])
+    #change header names to remove white spaces
+    df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
+    df.columns = df.columns.str.replace('(', '').str.replace(')', '')
+    return df
+
+dfA = data_pdreadin(dataA)
+
 #calculate average speed across lanes
-df['avg_speed'] = df[['speedlane_1', 'speedlane_2', 'speedlane_3',
+dfA['avg_speed'] = dfA[['speedlane_1', 'speedlane_2', 'speedlane_3',
 					'speedlane_4', 'speedlane_5', 'speedlane_6',
 					'speedlane_7']].mean(axis=1)
 #change time to datetime format
-df['time'] = pd.to_datetime(df['time'],format= '%H:%M' ).dt.time
+dfA['time'] = pd.to_datetime(dfA['time'],format= '%H:%M' ).dt.time
 def group(column1):
 	"""
 	group by column and create separate dataframes
 	"""
 	i = 0 
-	grouped = df.groupby(column1)
+	grouped = dfA.groupby(column1)
 	dframe = {}
 	for name, group in grouped:
 		dframe[i] = group
 		i = i+1
 	return(dframe)
+
 dframe = group('time')
 a_min = 0    # the minimial value of the paramater a
 a_max = len(dframe)  # the maximal value of the paramater a
@@ -53,7 +64,7 @@ a_slider = Slider(slider_ax,      # the axes object containing the slider
                   a_max,          # maximal value of the parameter
                   valinit=a_init  # initial value of the parameter
                   )
-# Ddefine a function that will be executed each time the value
+# Define a function that will be executed each time the value
 # indicated by the slider changes. The variable of this function will
 # be assigned the value of the slider.
 def update(a):
