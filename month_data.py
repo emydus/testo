@@ -4,11 +4,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from fbprophet import Prophet
-from fbprophet.diagnostics import cross_validation
-from fbprophet.plot import plot_cross_validation_metric
+# from fbprophet import Prophet
+# from fbprophet.diagnostics import cross_validation
+# from fbprophet.plot import plot_cross_validation_metric
 import seaborn as sns
-
+from scipy import stats
 
 # workdir = os.path.dirname(__file__)
 # datafolderpath = os.path.join(workdir,"data")
@@ -38,7 +38,8 @@ def loadfiles(allFiles):
     dframe = dframe.rename(columns = {'date':'datetime'})
     return dframe
 
-path =r'/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018' # use your path
+# path =r'/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018'
+path = 'C:/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018' # use your path
 allFiles = glob.glob(path + "/*.csv")
 dframe = loadfiles(allFiles)
 
@@ -115,9 +116,23 @@ def probability_(dframe):
     sns.distplot(dframe['avg_speed'])
     plt.show()
 
+def normaldist_test(df):
+    """tests if distribution can be considered a normal distribution"""
+    k2, p = stats.normaltest(df['speedlane_1'])
+    alpha = 1e-3
+    print("p = {:g}".format(p))
+    if p < alpha:  # null hypothesis: x comes from a normal distribution
+        print("The null hypothesis can be rejected")
+    else:
+        print("The null hypothesis cannot be rejected")
+
+
 dframe = dframe[np.isfinite(dframe['speedlane_1'])]
-sns.distplot(dframe['speedlane_1'])
-plt.show()
+# sns.distplot(dframe['speedlane_1'], fit = stats.norm)
+# plt.show()
+
+normaldist_test(dframe)
+
 # plt.plot(merged_df['datetime'], actual_traffic, label = 'actual traffic')
 # plt.plot(merged_df['datetime'], forecasted_traffic, label = 'forecasted traffic')
 # plt.legend()

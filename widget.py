@@ -7,7 +7,8 @@ import os
 
 #Find relative path to data (see yjt_master.py)
 workdir = os.path.dirname(__file__)
-dataA = os.path.join(workdir,"data", 'M42 A Carriageway 40091017.tcd.csv')
+workdir = "C:/Users/Eloisa/Google Drive/MWay_Comms/"
+dataA = os.path.join(workdir, 'M42 A Carriageway 40091017.tcd.csv')
 
 #import data as a panda dataframe
 def data_pdreadin(data):
