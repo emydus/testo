@@ -10,6 +10,7 @@ ISSUES V0.1.4
 '''  
 #%%
 import seaborn as sns
+import scipy 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -131,7 +132,7 @@ for LData in lane_data_all:
     a=1
     for i in LData:
         #plt.subplot(1,4,a)
-        dframe[i].plot.hist(bins=59,rwidth=0.9)
+        sns.distplot()
         plt.title('LData')
         plt.legend()
         a+=1
@@ -146,3 +147,6 @@ dframe['flow_total'].plot.hist(bins=57,rwidth=0.9)
 plt.title('Total Flow')
 #%%
 dframe1['flow_total'].plot.line()
+#%%
+Dframe=dframe[np.isfinite(dframe['speedlane_4'])]
+sns.distplot(Dframe['speedlane_4'],kde=False,fit=scipy.stats.norm)
