@@ -6,28 +6,39 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datetime as date
 from pathlib import Path
+import glob
+import os
+
 #from fbprophet import Prophet
 
-cwd = Path.cwd()
-cwd = cwd.resolve(strict=True)
-datafolderpath = cwd.joinpath("data")
+def loadfiles(allFiles):
+    """loop through all csv files and concatenate into a dataframe"""
+    list_ = []
+    for file in allFiles:
+        df = pd.read_csv(file, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes',
+        'Flow(Category 1)', 'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)',
+        'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
+        'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
+        'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
+        'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
+        'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
+        'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
+        na_values = ['-1'])
+        list_.append(df)
+    dframe = pd.concat(list_)
+    #change header names to remove white spaces
+    dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
+    dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
+    #convert to datetime
+    dframe["date"] = dframe["date"].map(str) + " " + dframe["time"]
+    dframe["date"] = pd.to_datetime(dframe["date"],format="%d/%m/%y %H:%M")
+    dframe = dframe.drop(columns='time')
+    dframe = dframe.rename(columns = {'date':'datetime'})
+    return dframe
 
-allFiles = list(datafolderpath.glob("**/*.csv"))
-df_list = []
-#print(allFiles,'test')
-#loop through all csv files and concatenate into a dataframe
-for file in allFiles:
-    df = pd.read_csv(file, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Flow(Category 1)', 
-	'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)', 
-	'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
-	'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)', 
-	'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)', 
-	'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)', 
-	'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)', 
-	'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
-	na_values = ['-1'])
-    df_list.append(df)
-dframe = pd.concat(df_list)
+path =r'D:\D Drive temp backup\Uni\3rd Year\MWay Comms Project Group\Git\PHY346_MWayComms\data' # use your path
+allFiles = glob.glob(path + "/*.csv")
+dframe = loadfiles(allFiles)
 
 #change header names to remove white spaces
 dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
@@ -52,7 +63,7 @@ dframe['avg_headway'] = dframe[['headwaylane_1','headwaylane_2','headwaylane_3',
 dframe['avg_flow'] = dframe[['flowlane_1','flowlane_2','flowlane_3','flowlane_4','flowlane_5','flowlane_6','flowlane_7']].mean(axis=1)
 
 #Hopefully removes duplicate columns from dframe to enable group function to work
-#dframe = dframe.loc[:,~df.columns.duplicated()]
+dframe = dframe.loc[:,~dframe.columns.duplicated()]
 
 #All of named var excluding avg
 speed_all=['avg_speed','speedlane_1', 'speedlane_2', 'speedlane_3',	'speedlane_4', 'speedlane_5', 'speedlane_6','speedlane_7']
@@ -148,4 +159,4 @@ var1='flow_total'
 Dframe=dframe[np.isfinite(dframe[var1])]
 sns.distplot(Dframe[var1],kde=False,fit=scipy.stats.norm)
 #%%
-df[df.index.duplicated()]
+dframe[dframe.index.duplicated()]
