@@ -4,3 +4,6 @@
 # datasets
 *.tcd.csv
 *.xlsx
+
+# hidden files
+.DS_Store
