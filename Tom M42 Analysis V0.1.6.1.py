@@ -1,13 +1,3 @@
-'''
-CHANGELOG V0.1.4
-- Updated code to be consistent with V0.1.2; inserted dataframe and function 
-
-ISSUES V0.1.4
-- May be useful to add further inputs to Speedtime() to take time values between which
-    to plot (i.e time_start, time_end).
-- Subplot system may need tweaking
-- Possible redundancy of the "datetime" module
-'''  
 #%%
 import seaborn as sns
 import scipy 
@@ -60,6 +50,10 @@ dframe['avg_speed'] = dframe[['speedlane_1', 'speedlane_2', 'speedlane_3',
 					'speedlane_7']].mean(axis=1)
 dframe['avg_headway'] = dframe[['headwaylane_1','headwaylane_2','headwaylane_3','headwaylane_4','headwaylane_5','headwaylane_6','headwaylane_7']].mean(axis=1)
 dframe['avg_flow'] = dframe[['flowlane_1','flowlane_2','flowlane_3','flowlane_4','flowlane_5','flowlane_6','flowlane_7']].mean(axis=1)
+
+#Hopefully removes duplicate columns from dframe to enable group function to work
+dframe = dframe.loc[:,~df.columns.duplicated()]
+
 #All of named var excluding avg
 speed_all=['avg_speed','speedlane_1', 'speedlane_2', 'speedlane_3',	'speedlane_4', 'speedlane_5', 'speedlane_6','speedlane_7']
 flow_all_lane=['flowlane_1','flowlane_2','flowlane_3','flowlane_4','flowlane_5','flowlane_6','flowlane_7']
@@ -68,6 +62,8 @@ occupancy_all=['avg_occupancy','occupancylane_1', 'occupancylane_2', 'occupancyl
 headway_all=['avg_headway','headwaylane_1','headwaylane_2','headwaylane_3','headwaylane_4','headwaylane_5','headwaylane_6','headwaylane_7']
 dframe['flow_total']=dframe[flow_all_lane].sum(axis=1)
 lane_data_all=[speed_all,flow_all_lane,occupancy_all,headway_all]
+
+
 print('Data Loaded')
 #%%
 
@@ -148,5 +144,8 @@ plt.title('Total Flow')
 #%%
 dframe1['flow_total'].plot.line()
 #%%
-Dframe=dframe[np.isfinite(dframe['speedlane_4'])]
-sns.distplot(Dframe['speedlane_4'],kde=False,fit=scipy.stats.norm)
+var1='flow_total'
+Dframe=dframe[np.isfinite(dframe[var1])]
+sns.distplot(Dframe[var1],kde=False,fit=scipy.stats.norm)
+#%%
+df[df.index.duplicated()]
