@@ -113,8 +113,12 @@ def forecast_test(forecast, dframe2):
 
 
 def probability_(dframe):
-    sns.distplot(dframe['avg_speed'])
-    plt.show()
+    mean = dframe['speedlane_1'].mean()
+    stdev = dframe['speedlane_1'].std()
+    speed = 60
+    probability = stats.norm.cdf(speed, mean, stdev)
+    print(probability)
+
 
 def normaldist_test(df):
     """tests if distribution can be considered a normal distribution"""
@@ -126,12 +130,11 @@ def normaldist_test(df):
     else:
         print("The null hypothesis cannot be rejected")
 
-
 dframe = dframe[np.isfinite(dframe['speedlane_1'])]
 # sns.distplot(dframe['speedlane_1'], fit = stats.norm)
 # plt.show()
 
-normaldist_test(dframe)
+probability_(dframe)
 
 # plt.plot(merged_df['datetime'], actual_traffic, label = 'actual traffic')
 # plt.plot(merged_df['datetime'], forecasted_traffic, label = 'forecasted traffic')
