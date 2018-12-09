@@ -14,7 +14,7 @@ datafolderpath = cwd.joinpath("data")
 
 allFiles = list(datafolderpath.glob("**/*.csv"))
 df_list = []
-
+print(allFiles,'test')
 #loop through all csv files and concatenate into a dataframe
 for file in allFiles:
     df = pd.read_csv(file, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Flow(Category 1)', 
@@ -35,7 +35,7 @@ dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.re
 
 #convert to datetime
 dframe["date"] = dframe["date"].map(str) + " " + dframe["time"]
-dframe["date"] = pd.to_datetime(dframe["date"],format="%d/%m/%y %H:%M")
+dframe["date"] = pd.to_datetime(dframe["date"],format="%d-/%m-/%y %H:%M")
 dframe = dframe.drop(columns='time')
 dframe = dframe.rename(columns = {'date':'datetime'})
 
@@ -52,7 +52,7 @@ dframe['avg_headway'] = dframe[['headwaylane_1','headwaylane_2','headwaylane_3',
 dframe['avg_flow'] = dframe[['flowlane_1','flowlane_2','flowlane_3','flowlane_4','flowlane_5','flowlane_6','flowlane_7']].mean(axis=1)
 
 #Hopefully removes duplicate columns from dframe to enable group function to work
-dframe = dframe.loc[:,~df.columns.duplicated()]
+#dframe = dframe.loc[:,~df.columns.duplicated()]
 
 #All of named var excluding avg
 speed_all=['avg_speed','speedlane_1', 'speedlane_2', 'speedlane_3',	'speedlane_4', 'speedlane_5', 'speedlane_6','speedlane_7']
