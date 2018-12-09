@@ -14,7 +14,7 @@ datafolderpath = cwd.joinpath("data")
 
 allFiles = list(datafolderpath.glob("**/*.csv"))
 df_list = []
-print(allFiles,'test')
+#print(allFiles,'test')
 #loop through all csv files and concatenate into a dataframe
 for file in allFiles:
     df = pd.read_csv(file, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Flow(Category 1)', 
@@ -34,10 +34,10 @@ dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
 dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
 
 #convert to datetime
-dframe["date"] = dframe["date"].map(str) + " " + dframe["time"]
-dframe["date"] = pd.to_datetime(dframe["date"],format="%d-/%m-/%y %H:%M")
-dframe = dframe.drop(columns='time')
-dframe = dframe.rename(columns = {'date':'datetime'})
+#dframe["date"] = dframe["date"].map(str) + " " + dframe["time"]
+#dframe["date"] = pd.to_datetime(dframe["date"],format="%d/%m/%y %H:%M")
+#dframe = dframe.drop(columns='time')
+#dframe = dframe.rename(columns = {'date':'datetime'})
 
 #calculate average occupancy accross all lanes
 dframe['avg_occupancy'] = dframe[['occupancylane_1', 'occupancylane_2', 'occupancylane_3',
