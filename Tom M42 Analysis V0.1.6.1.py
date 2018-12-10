@@ -44,12 +44,6 @@ dframe = loadfiles(allFiles)
 dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
 dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
 
-#convert to datetime
-#dframe["date"] = dframe["date"].map(str) + " " + dframe["time"]
-#dframe["date"] = pd.to_datetime(dframe["date"],format="%d/%m/%y %H:%M")
-#dframe = dframe.drop(columns='time')
-#dframe = dframe.rename(columns = {'date':'datetime'})
-
 #calculate average occupancy accross all lanes
 dframe['avg_occupancy'] = dframe[['occupancylane_1', 'occupancylane_2', 'occupancylane_3',
 					'occupancylane_4', 'occupancylane_5', 'occupancylane_6',
@@ -75,9 +69,16 @@ dframe['flow_total']=dframe[flow_all_lane].sum(axis=1)
 lane_data_all=[speed_all,flow_all_lane,occupancy_all,headway_all]
 
 
+
 print('Data Loaded')
 #%%
-
+#set index to datetime and generate a new dframe of just morning data for all days
+dframe = dframe.set_index(pd.DatetimeIndex(dframe['datetime']))
+dframe_rush_morning=dframe.between_time('6:30','9:30')
+dframe_rush_evening=dframe.between_time('16:30','18:30')
+dframe_between_rush=dframe.between_time('9:30','16:30')
+#%%
+dframe.set_index('geographic_address')
 def group(column):
 	"""
 	Group by column and create separate dataframes
@@ -150,13 +151,26 @@ for LData in lane_data_all:
     for i in LData[0:5]:
         print(dframe[i].describe([.99,.95,.75,.5,.25,.05,.01]))
 #%%
-dframe['flow_total'].plot.hist(bins=57,rwidth=0.9)
+#dframe = dframe.set_index(pd.DatetimeIndex(dframe['datetime']))
+dframe_rush['flow_total'].plot.hist(bins=57,rwidth=0.9)
 plt.title('Total Flow')
 #%%
 dframe1['flow_total'].plot.line()
 #%%
 var1='flow_total'
-Dframe=dframe[np.isfinite(dframe[var1])]
-sns.distplot(Dframe[var1],kde=False,fit=scipy.stats.norm)
+varFrame=dframe
+Dframe=varFrame[np.isfinite(varFrame[var1])]
+sns.distplot(Dframe[var1],kde=False)
+plt.title('Flow for all times', len(varFrame[var1]))
+len(varFrame[var1])
+#%%
+sns.lineplot(x='datetime',y=var1,data=dframe['datetime','var1'])
+plt.show()
+#%%
+dframe=dframe.set_index('geographic_address')
+Sensors=list(dict.fromkeys(dframe['geographic_address']))
+print(Sensors[0])
+dframe['M42/6104L']=dframe.loc['M42/6104L']
+print(dframe['M42/6104L'])
 #%%
 dframe[dframe.index.duplicated()]
