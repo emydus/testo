@@ -78,7 +78,7 @@ dframe_rush_morning=dframe.between_time('6:30','9:30')
 dframe_rush_evening=dframe.between_time('16:30','18:30')
 dframe_between_rush=dframe.between_time('9:30','16:30')
 #%%
-dframe.set_index('geographic_address')
+#dframe.set_index('geographic_address')
 def group(column):
 	"""
 	Group by column and create separate dataframes
@@ -88,7 +88,10 @@ def group(column):
 	for name, group in grouped:
 		dframe[name] = group
 	return(dframe1)
-dframe1 = group('geographic_address')
+#dframe1 = group('geographic_address')
+
+
+
 
 #Sensors=list(set(df['geographic_address'])) # Dated Below should preserve order
 Sensors=list(dict.fromkeys(dframe['geographic_address']))
@@ -174,3 +177,6 @@ dframe['M42/6104L']=dframe.loc['M42/6104L']
 print(dframe['M42/6104L'])
 #%%
 dframe[dframe.index.duplicated()]
+#%%
+dframe.groupby('geographic_address')
+dframe['geographic_address']
