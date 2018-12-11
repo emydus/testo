@@ -96,7 +96,7 @@ def group(column):
 #Sensors=list(set(df['geographic_address'])) # Dated Below should preserve order
 Sensors=list(dict.fromkeys(dframe['geographic_address']))
 #%%
-'''
+
 #Convert Sensors list into indexed pandas dataframe
 SensorFrame = pd.DataFrame(data=Sensors,index=Sensors)
 
@@ -119,6 +119,8 @@ def Speedtime(sensor1,sensor2):
         del LinePlot   
         del speeds
     plt.show()
+
+'''
 def SpeedOccupancy(sensor1,sensor2):
     """
     Plot sensors' speed-Occupancy data from lanes 1-3 and avg. speed, 
@@ -135,6 +137,7 @@ def SpeedOccupancy(sensor1,sensor2):
         del LinePlot   
         del speeds
     plt.show()
+SpeedOccupancy(1,20)
 '''
 #%%
 #Speedtime('M42/6190A','M42/6200A')
@@ -143,10 +146,10 @@ for LData in lane_data_all:
     a=1
     for i in LData:
         #plt.subplot(1,4,a)
-        sns.distplot()
+        sns.distplot(dframe[i])
         plt.title('LData')
         plt.legend()
-        a+=1
+        #a+=1
     plt.show()
     del a
 #%%
@@ -160,12 +163,13 @@ plt.title('Total Flow')
 #%%
 dframe1['flow_total'].plot.line()
 #%%
-var1='flow_total'
 varFrame=dframe
-Dframe=varFrame[np.isfinite(varFrame[var1])]
-sns.distplot(Dframe[var1],kde=False)
-plt.title('Flow for all times', len(varFrame[var1]))
-len(varFrame[var1])
+for var1 in speed_all:
+    Dframe=varFrame
+    Dframe=varFrame[np.isfinite(varFrame[var1])]
+    ax1=Dframe[var1].plot.hist(bins=85,range=(0,170))
+    plt.title('Speed all time')
+    plt.legend()
 #%%
 sns.lineplot(x='datetime',y=var1,data=dframe['datetime','var1'])
 plt.show()
@@ -178,19 +182,25 @@ print(dframe['M42/6104L'])
 #%%
 dframe[dframe.index.duplicated()]
 #%%
-dframe.groupby('geographic_address')
-dframe['geographic_address']
+print(Sensors)
 #%%
 Sensors=list(dict.fromkeys(dframe['geographic_address']))
-varFrame=dframe.set_index('geographic_address')
-var='avg_occupancy'
+#Define variable and dataframe 
+varFrame=dframe_between_rush.set_index('geographic_address')
+var='avg_speed'
 varMeans=[]
 varErrors=[]
-for i in Sensors[1:20]:
+#Calculate Mean and standard error for var for each geographic address
+for i in Sensors:
     varMeans.append(varFrame[var].loc[i].mean(axis=0))
     varErrors.append(5*varFrame[var].loc[i].sem())
-
-plt.errorbar(Sensors[1:20],varMeans, varErrors,linestyle='None',marker='*')
-print(len(varMeans),'Means',len(varErrors),'errors')
+#PLot
+plt.errorbar(Sensors,varMeans, varErrors,linestyle='None',marker='*').xlabel=('Geographic Address')
+plt.title('Average Speed vs Geographic Address')
+plt.show()
+#plt.hist(varErrors,bins=80)
+#plt.title(var+'Error distribution')
+#plt.show()
+#clear tables
 del(varMeans)
 del(varErrors)
