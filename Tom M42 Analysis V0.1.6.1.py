@@ -180,3 +180,17 @@ dframe[dframe.index.duplicated()]
 #%%
 dframe.groupby('geographic_address')
 dframe['geographic_address']
+#%%
+Sensors=list(dict.fromkeys(dframe['geographic_address']))
+varFrame=dframe.set_index('geographic_address')
+var='avg_occupancy'
+varMeans=[]
+varErrors=[]
+for i in Sensors[1:20]:
+    varMeans.append(varFrame[var].loc[i].mean(axis=0))
+    varErrors.append(5*varFrame[var].loc[i].sem())
+
+plt.errorbar(Sensors[1:20],varMeans, varErrors,linestyle='None',marker='*')
+print(len(varMeans),'Means',len(varErrors),'errors')
+del(varMeans)
+del(varErrors)
