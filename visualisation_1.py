@@ -7,10 +7,14 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
+from matplotlib.dates import DateFormatter, HourLocator
+import numpy as np
 
 #Find relative path to data (see yjt_master.py)
-workdir = os.path.dirname(__file__)
-dataA = os.path.join(workdir,"data", 'M42 A Carriageway 40091017.tcd.csv')
+workdir = 'C:/Users/Eloisa/Google Drive/MWay_Comms/'
+# workdir = os.path.dirname(__file__)
+# dataA = os.path.join(workdir,"data", 'M42 A Carriageway 40091017.tcd.csv')
+dataA = os.path.join(workdir, 'M42 A Carriageway 40091017.tcd.csv')
 
 #import data as a panda dataframe
 def data_pdreadin(data):
@@ -26,37 +30,16 @@ def data_pdreadin(data):
     #change header names to remove white spaces
     df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
     df.columns = df.columns.str.replace('(', '').str.replace(')', '')
-    #datetime_format
-    df["date"] = df["date"].map(str) + " " + df["time"]
-    df["date"] = pd.to_datetime(df["date"],format="%d-%m-%y %H:%M")
-    df = df.drop(columns='time')
-    #column_format
-    df = df.rename(columns = {"date":"datetime"})
     return df
 
 dfA = data_pdreadin(dataA)
-
-import pdb; pdb.set_trace()
-<<<<<<< HEAD
-df["date"] = pd.to_datetime(df["date"],format="%d-%m-%y %H:%M")
-df = df.drop(columns='time')
-df = df.rename(columns = {'date':'datetime'})
-print(df['datetime'])
-
-# df['time'] = pd.to_datetime(df['time'],format= '%H:%M' ).dt.time
-# df['congested'] = df['avg_speed'].apply(lambda x: x < 60)
-# group_by_time = df.groupby(['time', 'congested'])
-# count_congested = group_by_time.size().unstack()
-# count_congested.plot(kind='barh', stacked=True)
-# plt.show()
-=======
-
-print(dfA['datetime'])
+dfA['avg_speed'] = dfA[['speedlane_1', 'speedlane_2', 'speedlane_3',
+                    'speedlane_4', 'speedlane_5', 'speedlane_6',
+                    'speedlane_7']].mean(axis=1)
 
 dfA['time'] = pd.to_datetime(dfA['time'],format= '%H:%M' ).dt.time
 dfA['congested'] = dfA['avg_speed'].apply(lambda x: x < 60)
 group_by_time = dfA.groupby(['time', 'congested'])
 count_congested = group_by_time.size().unstack()
-count_congested.plot(kind='barh', stacked=True)
+ax = count_congested.plot(kind='barh', stacked=True)
 plt.show()
->>>>>>> f9fe040597524b145c4366ddc3bd12f5bdbfb824
