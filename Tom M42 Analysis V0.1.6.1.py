@@ -164,11 +164,11 @@ plt.title('Total Flow')
 dframe1['flow_total'].plot.line()
 #%%
 varFrame=dframe
-for var1 in speed_all:
+for var1 in flow_all_lane:
     Dframe=varFrame
     Dframe=varFrame[np.isfinite(varFrame[var1])]
-    ax1=Dframe[var1].plot.hist(bins=85,range=(0,170))
-    plt.title('Speed all time')
+    ax1=Dframe[var1].plot.hist(bins=60,range=(0,60))
+    plt.title('Flow all time')
     plt.legend()
 #%%
 sns.lineplot(x='datetime',y=var1,data=dframe['datetime','var1'])
@@ -204,3 +204,24 @@ plt.show()
 #clear tables
 del(varMeans)
 del(varErrors)
+#%%
+Sensors=list(dict.fromkeys(dframe['geographic_address']))
+#Define variable and dataframe 
+varFrame=dframe_rush_evening
+varFrame=varFrame.loc['2018-10-05']
+varFrame=varFrame.set_index('geographic_address')
+
+print(varFrame.info())
+var=flow_all_lane[0:4]
+varMeans=[]
+varErrors=[]
+for i in Sensors_temp[5:30]:
+    for j in var:
+        plt.plot(varFrame['datetime'].loc[i],varFrame[j].loc[i])
+    plt.legend()
+    plt.ylim(0,50)
+    plt.title(i)
+    plt.gcf().autofmt_xdate()
+    plt.show()
+
+
