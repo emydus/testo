@@ -12,18 +12,22 @@ from pathlib import Path
 #Find relative path to data (see pickle_reader.py)
 cwd = Path.cwd()
 cwd = cwd.resolve(strict=True)
-dataA = cwd.joinpath("data",'M42 A Carriageway 40091017.tcd.csv.pkl.gz')
+dataA = cwd.joinpath("data",'M42 A Carriageway 40091017.tcd.csv')
 
 #import data as a panda dataframe
-def data_pdreadin(file):
-    df = pd.read_pickle(file)
-    # TO-DO : NEED TO IMPLEMENT REPLACEMENT FOR NA_VALUES=["-1","0.0"]
+def data_pdreadin(data):
+    df = pd.read_csv(data, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Flow(Category 1)',
+        'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)',
+        'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
+        'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
+        'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
+        'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
+        'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
+        'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
+        na_values = ['-1', '0.0'])
     #change header names to remove white spaces
     df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
     df.columns = df.columns.str.replace('(', '').str.replace(')', '')
-    #drop unwanted columns
-    df = df.drop(columns=["co_address","lcc_address","transponder_address",
-                          "device_address"])
     #datetime_format
     df["date"] = df["date"].map(str) + " " + df["time"]
     df["date"] = pd.to_datetime(df["date"],format="%d-%m-%y %H:%M")
@@ -31,6 +35,7 @@ def data_pdreadin(file):
     #column_format
     df = df.rename(columns = {"date":"datetime"})
     return df
+
 
 dfA = data_pdreadin(dataA)
 
@@ -88,15 +93,6 @@ def time_choice(index):
 
 Sensors=list(dict.fromkeys(dfA['geographic_address']))
 
-# =============================================================================
-# #Flag sensor areas where there are sliproads
-# Sliplist = []
-# for Sensor in Sensors:
-#     if ("K" or "J") in Sensor:
-#         Sliplist.append(Sensor)
-# =============================================================================
-# Jason: The above section isn't needed for running your sliplist since you iterate through the whole thing
-#       again...
 # =============================================================================
 # '''Eloisa I leave the commented out code below for you to delete if you deem it fit to go - Titus'''
 # # select columns from sensor dataset
