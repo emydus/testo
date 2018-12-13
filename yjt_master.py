@@ -82,41 +82,49 @@ def carriage_mean(dataf, column_name):
 #dfA = dfA[cols]
 
 
+def corr1(dataf, cmethod):
+    plt.figure()
+    plt.matshow(dataf.corr(method=cmethod))
+    locs, labels = plt.yticks()
+    labels = ["no. of lanes", "flow_cat1", "speed", "flow", "occupancy", "headway"]
+    locs = [0,1,5,9,13,17]
+    plt.yticks(locs, labels)
+    plt.xticks(locs, labels, rotation="vertical")
+    plt.colorbar(spacing="uniform")
+    plt.show()
+    #plt.savefig(cwd.joinpath("results", 'linearcorr_A_0'))
+    plt.close()
 
-# =============================================================================
-# plt.figure(1)
-# plt.matshow(dfA.corr(method='spearman'))
-# locs, labels = plt.yticks()
-# labels = ["no. of lanes", "flow_cat1", "speed", "flow", "occupancy", "headway"]
-# locs = [0,1,5,9,13,17]
-# plt.yticks(locs, labels)
-# plt.xticks(locs, labels, rotation="vertical")
-# plt.colorbar(spacing="uniform")
-# plt.show()
-# #plt.savefig(cwd.joinpath("results", 'linearcorr_A_0'))
-# plt.close(1)
-# =============================================================================
+#corr1(dfB,"pearson")
+#corr1(dfB,"spearman")
 
-dfA = carriage_mean(dfA, 'speed')
-dfA = carriage_mean(dfA, 'flow')
-dfA = carriage_mean(dfA, 'occupancy')
-dfA = carriage_mean(dfA, 'headway')
+#dfA = carriage_mean(dfA, 'speed')
+#dfA = carriage_mean(dfA, 'flow')
+#dfA = carriage_mean(dfA, 'occupancy')
+#dfA = carriage_mean(dfA, 'headway')
+#
+dfB = carriage_mean(dfB, 'speed')
+dfB = carriage_mean(dfB, 'flow')
+dfB = carriage_mean(dfB, 'occupancy')
+dfB = carriage_mean(dfB, 'headway')
+#
+#print(dfA.corr("spearman").loc["avg_speed":"avg_headway","avg_speed":"avg_headway"])
 
-print(dfA.corr("spearman").loc["avg_speed":"avg_headway","avg_speed":"avg_headway"])
+def corr2(dataf, cmethod):
+    df_av = dataf.loc[:, ["number_of_lanes", 'flowcategory_1', 'flowcategory_2', 'flowcategory_3', 
+                  'flowcategory_4',"avg_speed", "avg_flow", "avg_occupancy", "avg_headway"]]
+    plt.figure()
+    plt.matshow(df_av.corr(method=cmethod))
+    locs, labels = plt.yticks()
+    labels = ["no. of lanes", "flow_cat1", "flow_cat2", "flow_cat3", "flow_cat4", 
+              "avg_speed", "avg_flow", "avg_occupancy", "avg_headway"]
+    locs = range(9)
+    plt.yticks(locs, labels)
+    plt.xticks(locs, labels, rotation="vertical")
+    plt.colorbar(spacing="uniform")
+    plt.show()
+    #plt.savefig(cwd.joinpath("results", 'linearcorr_avgA_0'))
+    plt.close()
 
-# =============================================================================
-# dfA_av = dfA.loc[:, ["number_of_lanes", 'flowcategory_1', 'flowcategory_2', 'flowcategory_3', 
-#                   'flowcategory_4',"avg_speed", "avg_flow", "avg_occupancy", "avg_headway"]]
-# plt.figure(2)
-# plt.matshow(dfA_av.corr(method='spearman'))
-# locs, labels = plt.yticks()
-# labels = ["no. of lanes", "flow_cat1", "flow_cat2", "flow_cat3", "flow_cat4", 
-#           "avg_speed", "avg_flow", "avg_occupancy", "avg_headway"]
-# locs = range(9)
-# plt.yticks(locs, labels)
-# plt.xticks(locs, labels, rotation="vertical")
-# plt.colorbar(spacing="uniform")
-# plt.show()
-# #plt.savefig(cwd.joinpath("results", 'linearcorr_avgA_0'))
-# plt.close("all")
-# =============================================================================
+corr2(dfB,"pearson")
+corr2(dfB,"spearman")
