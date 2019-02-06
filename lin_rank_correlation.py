@@ -71,15 +71,15 @@ def carriage_mean(dataf, column_name):
     return dataf
 
 # Rearrange columns to put derived averages at the end of their measures
-#cols = dfA.columns.tolist()
-#cols = ['geographic_address', 'datetime', 'number_of_lanes', 'flowcategory_1', 
-#        'flowcategory_2', 'flowcategory_3', 'flowcategory_4', 'speedlane_1', 
-#        'speedlane_2', 'speedlane_3', 'speedlane_4', 'avg_speed', 'flowlane_1', 
-#        'flowlane_2', 'flowlane_3', 'flowlane_4', 'avg_flow', 'occupancylane_1', 
-#        'occupancylane_2', 'occupancylane_3', 'occupancylane_4', 'avg_occupancy', 
-#        'headwaylane_1', 'headwaylane_2', 'headwaylane_3', 'headwaylane_4', 
-#        'avg_headway']
-#dfA = dfA[cols]
+# cols = dfA.columns.tolist()
+# cols = ['geographic_address', 'datetime', 'number_of_lanes', 'flowcategory_1', 
+#         'flowcategory_2', 'flowcategory_3', 'flowcategory_4', 'speedlane_1', 
+#         'speedlane_2', 'speedlane_3', 'speedlane_4', 'avg_speed', 'flowlane_1', 
+#         'flowlane_2', 'flowlane_3', 'flowlane_4', 'avg_flow', 'occupancylane_1', 
+#         'occupancylane_2', 'occupancylane_3', 'occupancylane_4', 'avg_occupancy', 
+#         'headwaylane_1', 'headwaylane_2', 'headwaylane_3', 'headwaylane_4', 
+#         'avg_headway']
+# dfA = dfA[cols]
 
 
 def corr1(dataf, cmethod):
@@ -95,19 +95,19 @@ def corr1(dataf, cmethod):
     #plt.savefig(cwd.joinpath("results", 'linearcorr_A_0'))
     plt.close()
 
-#corr1(dfB,"pearson")
-#corr1(dfB,"spearman")
+# corr1(dfB,"pearson")
+# corr1(dfB,"spearman")
 
-#dfA = carriage_mean(dfA, 'speed')
-#dfA = carriage_mean(dfA, 'flow')
-#dfA = carriage_mean(dfA, 'occupancy')
-#dfA = carriage_mean(dfA, 'headway')
-#
+# dfA = carriage_mean(dfA, 'speed')
+# dfA = carriage_mean(dfA, 'flow')
+# dfA = carriage_mean(dfA, 'occupancy')
+# dfA = carriage_mean(dfA, 'headway')
+
 dfB = carriage_mean(dfB, 'speed')
 dfB = carriage_mean(dfB, 'flow')
 dfB = carriage_mean(dfB, 'occupancy')
 dfB = carriage_mean(dfB, 'headway')
-#
+
 #print(dfA.corr("spearman").loc["avg_speed":"avg_headway","avg_speed":"avg_headway"])
 
 def corr2(dataf, cmethod):
