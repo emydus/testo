@@ -1,6 +1,7 @@
 """
-Edited by Jason (30/11/2018)
-Verified working
+Edited by Titus (06/02/19)
+Throws Error: Savefig() doesn't like that a pathlib path is used to direct the saving of files.
+Can still be used, but function does not output to "results" folder any longer
 """
 
 import pandas as pd
@@ -39,7 +40,7 @@ def data_pdreadin(data):
 
 dfA = data_pdreadin(dataA)
 
-print(dfA.columns)
+#print(dfA.columns)
 
 def carriage_mean(dataf,column_name):
     dataf['avg_' + column_name] = dataf[[column_name + 'lane_1', column_name + 'lane_2',
@@ -114,7 +115,7 @@ def sensspeed(sensorname):
     SensorSpeeds = pd.melt(SensorSpeeds, id_vars = ['datetime'], var_name = 'lane', value_name = 'speed')
     return SensorSpeeds
 
-print(sensspeed('M42/6111A'))
+#print(sensspeed('M42/6111A'))
 #sns.lineplot(x = 'time', y = 'speed', hue = 'lane', data = sensspeed('M42/6111A'))
 #plt.show()
 
@@ -204,7 +205,7 @@ def occutimeslice(hour, minute, n):
             plt.axvline(sensor, color="b", linewidth=0.4)
         elif "J" in sensor:
             plt.axvline(sensor, color="r", linewidth=0.4)
-    plt.savefig(cwd.joinpath("results",'%s.png' % (n)), dpi=300)
+    plt.savefig('%s.png' % (n), dpi=300)#cwd.joinpath("results",'%s.png' % (n)), dpi=300)
     plt.clf()
 
 def exportallslices(function):
