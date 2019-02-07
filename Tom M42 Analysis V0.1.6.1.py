@@ -23,7 +23,7 @@ def loadfiles(allFiles):
         'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
         'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
         'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
-        na_values = ['-1'])
+        na_values = ['-1'], low_memory=False)
         list_.append(df)
     dframe = pd.concat(list_)
     #change header names to remove white spaces
@@ -45,14 +45,8 @@ dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
 dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
 
 #calculate average occupancy accross all lanes
-dframe['avg_occupancy'] = dframe[['occupancylane_1', 'occupancylane_2', 'occupancylane_3',
-					'occupancylane_4', 'occupancylane_5', 'occupancylane_6',
-					'occupancylane_7']].mean(axis=1)
-
-#calculate average speed across lanes
-dframe['avg_speed'] = dframe[['speedlane_1', 'speedlane_2', 'speedlane_3',
-					'speedlane_4', 'speedlane_5', 'speedlane_6',
-					'speedlane_7']].mean(axis=1)
+dframe['avg_occupancy'] = dframe[['occupancylane_1', 'occupancylane_2', 'occupancylane_3','occupancylane_4', 'occupancylane_5', 'occupancylane_6','occupancylane_7']].mean(axis=1)
+dframe['avg_speed'] = dframe[['speedlane_1', 'speedlane_2', 'speedlane_3','speedlane_4', 'speedlane_5', 'speedlane_6','speedlane_7']].mean(axis=1)
 dframe['avg_headway'] = dframe[['headwaylane_1','headwaylane_2','headwaylane_3','headwaylane_4','headwaylane_5','headwaylane_6','headwaylane_7']].mean(axis=1)
 dframe['avg_flow'] = dframe[['flowlane_1','flowlane_2','flowlane_3','flowlane_4','flowlane_5','flowlane_6','flowlane_7']].mean(axis=1)
 

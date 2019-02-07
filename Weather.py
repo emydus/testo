@@ -180,7 +180,7 @@ def sensspeed(sensorname):
     Takes the name of a sensor, outputs the speed data for all times, ready for plotting.
     Make sure input is of the from: 'M42/6111A' (ie uses slashes, not underscores).
     '''
-    particular_df = geo_grouped.get_group(sensorname)
+    particular_df = geo_grouped.get_group(sensorname) #Pretty sure you could make use of the geochoice function here 
     SensorSpeeds = particular_df[['datetime','speedlane_1', 'speedlane_2', 'speedlane_3', 'avg_speed']]
     SensorSpeeds = pd.melt(SensorSpeeds, id_vars = ['datetime'], var_name = 'lane', value_name = 'speed')
     return SensorSpeeds
