@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
-import bokeh
+import bokeh.plotting as bkp
 
 cwd = Path.cwd()
 cwd = cwd.resolve(strict=True)
