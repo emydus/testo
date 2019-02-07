@@ -5,9 +5,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-workdir = os.path.dirname(__file__)
-datafolderpath = os.path.join(workdir,"data")
-allFiles = glob.glob(datafolderpath + "/*.csv")
+# workdir = os.path.dirname(__file__)
+# datafolderpath = os.path.join(workdir,"data")
+# allFiles = glob.glob(datafolderpath + "/*.csv")
+path = 'C:/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018' # use your path
+allFiles = glob.glob(path + "/*.csv")
 
 frame = pd.DataFrame()
 list_ = []
