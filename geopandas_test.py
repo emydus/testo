@@ -10,7 +10,7 @@ from shapely.geometry import Point
 cwd = Path.cwd()
 cwd = cwd.resolve(strict=True)
 station_geocodes_file = cwd.joinpath("data","weather","SRCE.csv")
-proj_file = cwd.joinpath("data","maps","europe-latest.osm.pbf")
+proj_file = cwd.joinpath("data","maps","ne_10m_admin_0_countries.dbf")
 proj_file_list = sorted(cwd.joinpath("data","maps").glob("*.shp"))
 
 df = pd.read_csv(station_geocodes_file)
