@@ -61,5 +61,7 @@ dframe1 = dframe.groupby(pd.Grouper('datetime')).mean()
 dframe2 = dframe1.reset_index()
 
 plt.plot(dframe2['datetime'], dframe2['avg_occupancy'])
+plt.xlabel('datetime')
+plt.ylabel('occupancy')
 plt.show()
 

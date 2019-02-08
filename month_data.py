@@ -43,7 +43,7 @@ path = 'C:/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018' # use your path
 allFiles = glob.glob(path + "/*.csv")
 dframe = loadfiles(allFiles)
 
-
+print(dframe)
 # %%
 
 def averagevar(dframe, variable):
