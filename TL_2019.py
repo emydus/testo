@@ -61,8 +61,6 @@ headway_all=['avg_headway','headwaylane_1','headwaylane_2','headwaylane_3','head
 dframe['flow_total']=dframe[flow_all_lane].sum(axis=1)
 lane_data_all=[speed_all,flow_all_lane,occupancy_all,headway_all]
 #%%
-sensorDict_geo = sensorsD(dframe,"geographic_address")
-sensorDict_time = sensorsD(dframe,"datetime")
 geo_grouped = dframe.groupby("geographic_address",sort=False)
 time_grouped = dframe.groupby("datetime",sort=False)
 #%%
@@ -88,6 +86,9 @@ def sensorsD(column):
         sensorsD[index] = id
         index += 1
     return sensorsD
+
+sensorDict_geo = sensorsD(dframe,"geographic_address")
+sensorDict_time = sensorsD(dframe,"datetime")
 
 def geochoice(index):
     return geo_grouped.get_group(sensorDict_geo[index])
