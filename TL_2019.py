@@ -13,6 +13,9 @@ import datetime as date
 from pathlib import Path
 import glob
 
+cwd = Path.cwd()
+cwd = cwd.resolve(strict=True)
+
 def loadfiles(allFiles):
     """loop through all csv files and concatenate into a dataframe"""
     list_ = []
@@ -38,8 +41,10 @@ def loadfiles(allFiles):
     dframe = dframe.rename(columns = {'date':'datetime'})
     return dframe
 #Load in files
-path =r'D:\D Drive temp backup\Uni\3rd Year\MWay Comms Project Group\Git\PHY346_MWayComms\data' # use your path
-allFiles = glob.glob(path + "/*.csv")
+#path =r'D:\D Drive temp backup\Uni\3rd Year\MWay Comms Project Group\Git\PHY346_MWayComms\data' # use your path
+#allFiles = glob.glob(path + "/*.csv")
+datafolderpath = cwd.joinpath("data")
+allFiles=datafolderpath.glob("*.tcd.csv*")
 dframe = loadfiles(allFiles)
 
 #change header names to remove white spaces
@@ -61,8 +66,6 @@ headway_all=['avg_headway','headwaylane_1','headwaylane_2','headwaylane_3','head
 dframe['flow_total']=dframe[flow_all_lane].sum(axis=1)
 lane_data_all=[speed_all,flow_all_lane,occupancy_all,headway_all]
 #%%
-sensorDict_geo = sensorsD(dframe,"geographic_address")
-sensorDict_time = sensorsD(dframe,"datetime")
 geo_grouped = dframe.groupby("geographic_address",sort=False)
 time_grouped = dframe.groupby("datetime",sort=False)
 #%%
@@ -89,6 +92,9 @@ def sensorsD(column):
         index += 1
     return sensorsD
 
+sensorDict_geo = sensorsD("geographic_address")
+sensorDict_time = sensorsD("datetime")
+
 def geochoice(index):
     return geo_grouped.get_group(sensorDict_geo[index])
 def time_choice(index):
@@ -108,10 +114,12 @@ def sensspeed(sensorname):
 def get_region(Start_Location,End_Location):
     """
     Produces a dataframe over a given section of motorway
+
     """
-    dframe_region=pd.DataFrame()
+    dframe_region_list=[]
     for pos in sensorDict_geo:
-        dframe_region.append(geochoice(pos))
+        dframe_region_list.append(geochoice(pos))
+    dframe_region=pd.concat(dframe_region_list)
     return dframe_region
 
 #Plots speed against time with speed averaged over the whole range
@@ -120,6 +128,7 @@ def RegionAvgSpeedTime(Start_Location,End_Location,Day):
 #%%
 #print(geochoice(0))
 #print(sensorsD(0))
+print(dframe)
 """
 To-do 
 
@@ -127,6 +136,6 @@ To-do
 
 Flow heatmap for pos against time for specific regions
 """
-print(get_region(0,2))
+print(get_region(1,4))
 #Pos_Time_Flow=get_region(0,10).pivot(index='geographic_address', columns='datetime', values='flow_total')
 #sns.heatmap(Pos_Time_Flow)

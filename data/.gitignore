@@ -1,0 +1,5 @@
+# Ignore datasets
+*.csv
+*.xlsx
+# Except this file
+!.gitignore
