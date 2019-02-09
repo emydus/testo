@@ -35,8 +35,8 @@ def loadtraffic(allFiles):
     return dframe
 
 def loadweather(file):
-    dframe = pd.read_csv(file, usecols=['uid','ob_time', 'prst_wx_id', 'visibility'], na_values=['0'])
-    dframe = dframe.rename(columns = {'ob_time':'datetime', 'uid' : 'sensor', 'prst_wx_id':'weather_code'})
+    dframe = pd.read_csv(file, usecols=['src_id','ob_time', 'prst_wx_id', 'visibility'], na_values=['0'])
+    dframe = dframe.rename(columns = {'ob_time':'datetime', 'src_id' : 'sensor', 'prst_wx_id':'weather_code'})
     dframe["datetime"] = pd.to_datetime(dframe["datetime"],format="%Y-%m-%d %H:%M:%S")
     return dframe
 
@@ -48,7 +48,9 @@ w_csv = 'weather_data.csv'
 w_file = os.path.join(w_path, w_csv)
 t_dframe = loadtraffic(allFiles)
 w_dframe = loadweather(w_file)
-
+#select several geographic addresses/IDs in close proximity
+t_dframe = t_dframe[t_dframe['geographic_address'].isin(['M42/6467A', 'M42/6451A', 'M42/6472A', 'M42/6477A', 'M42/6461A', 'M42/6458A'])]
+w_dframe = w_dframe[w_dframe['sensor'].isin(['19187', '593'])]
 def group(df, column):
    """
    group by column and create separate dataframes
@@ -59,7 +61,6 @@ def group(df, column):
        dframe[name] = group
    return(dframe)
 
-w_dframe2 = group(w_dframe, 'sensor')
 
 def averagevar(dframe, variable):
     """
@@ -80,16 +81,16 @@ def resample_average(dframe):
     #average speed over 30min intervals
     dframe['avg_speed'] = dframe.avg_speed.resample('60min').mean()
     dframe = dframe[np.isfinite(dframe['avg_speed'])]
-    #select several geographic addresses and take an average of the speeds across them
-    dframe1 = dframe[dframe['geographic_address'].isin(['M42/6292A', 'M42/6293A', 'M42/6294A'])]
-    dframe1 = dframe1.groupby(pd.Grouper('datetime')).mean()
+    #average over selected sensors
+    dframe1 = dframe.groupby(pd.Grouper('datetime')).mean()
     dframe2 = dframe1.reset_index()
     return dframe2
 
 t_dframe = resample_average(t_dframe)
-sensor_dframe = w_dframe2[201221]
+#average weather over selected sensors
+w_dframe = w_dframe.groupby(pd.Grouper('datetime')).mean()
 
-merged_df = t_dframe.merge(sensor_dframe, left_on='datetime', right_on='datetime', how='inner')
+merged_df = t_dframe.merge(w_dframe, left_on='datetime', right_on='datetime', how='inner')
 merged_df['visibility_km'] = merged_df['visibility']/ 100
 visibility = plt.plot(merged_df['datetime'], merged_df['visibility_km'])
 avg_speed =plt.plot(merged_df['datetime'], merged_df['avg_speed'])
