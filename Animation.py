@@ -53,15 +53,6 @@ dfA = carriage_mean(dfA,"speed")
 #calculate average occupancy across all lanes:
 dfA = carriage_mean(dfA,"occupancy")
 
-#def group(column):
-#    """
-#    group by column and create separate dataframes
-#    """
-#    grouped = df.groupby(column)
-#    dframe = {}
-#    for name, group in grouped:
-#        dframe[name] = group
-#    return(dframe)
 
 def sensorsD(dataf,column):
     """
@@ -89,20 +80,8 @@ def geochoice(index):
 def time_choice(index):
     return time_grouped.get_group(sensorDict_time[index])
 
-#dftime = group('time')
-#dfgeo_add = group('geographic_address')
-
 Sensors=list(dict.fromkeys(dfA['geographic_address']))
 
-# =============================================================================
-# '''Eloisa I leave the commented out code below for you to delete if you deem it fit to go - Titus'''
-# # select columns from sensor dataset
-# M42_6111A_speeds = dfgeo_add['M42/6111A'][['time','speedlane_1', 'speedlane_2', 'speedlane_3', 'avg_speed']]
-# # put dataframe into a format readable for Seaborn visualisation
-# M42_6111A_speeds = pd.melt(M42_6111A_speeds, id_vars = ['time'], var_name = 'lane', value_name = 'speed')
-# # plot line graph
-# sns.lineplot(x = 'time', y = 'speed', hue = 'lane', data = M42_6111A_speeds)
-# =============================================================================
 
 #create function which outputs speeds for all times dataframe for a single sensor
 def sensspeed(sensorname):
@@ -115,22 +94,6 @@ def sensspeed(sensorname):
     SensorSpeeds = pd.melt(SensorSpeeds, id_vars = ['datetime'], var_name = 'lane', value_name = 'speed')
     return SensorSpeeds
 
-#print(sensspeed('M42/6111A'))
-#sns.lineplot(x = 'time', y = 'speed', hue = 'lane', data = sensspeed('M42/6111A'))
-#plt.show()
-
-#print(time_grouped.get_group("2017-10-09 00:58:00")["datetime"])
-'''
-Eloisa I leave the commented out code below for you to delete if you deem it fit to go... - Titus
-'''
-# =============================================================================
-# #select columns from time dataset
-# eight_thirty_speeds = dframe[datetime.time(8,30)][['geographic_address', 'speedlane_1', 'speedlane_2', 'avg_speed']]
-#
-#
-# #put dataframe into a format readable for Seaborn visualisation
-# eight_thirty_speeds = pd.melt(eight_thirty_speeds, id_vars = ['geographic_address'], var_name = 'lane', value_name = 'speed')
-# =============================================================================
 
 #create speed-time function that creates plottable data frame (melting disabled for easier plotting)
 def stdframe(hour,minute):
