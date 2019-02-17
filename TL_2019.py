@@ -30,7 +30,14 @@ def loadfiles(allFiles):
         'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
         na_values = ['-1'], low_memory=False)
         list_.append(df)
-    dframe = pd.concat(list_)
+    """
+    
+    
+    Change number of days being looked at here
+    
+    
+    """
+    dframe = pd.concat(list_[0:7])
     #change header names to remove white spaces
     dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
     dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
@@ -66,6 +73,7 @@ headway_all=['avg_headway','headwaylane_1','headwaylane_2','headwaylane_3','head
 dframe['flow_total']=dframe[flow_all_lane].sum(axis=1)
 lane_data_all=[speed_all,flow_all_lane,occupancy_all,headway_all]
 #%%
+#returns groupby objects which later need calling with .get_group to turn into Dframes
 geo_grouped = dframe.groupby("geographic_address",sort=False)
 time_grouped = dframe.groupby("datetime",sort=False)
 #%%
@@ -119,6 +127,7 @@ def get_region(Start_Location,End_Location):
     dframe_region_list=[]
     for pos in sensorDict_geo:
         dframe_region_list.append(geochoice(pos))
+    dframe_region_list=dframe_region_list[Start_Location:End_Location]
     dframe_region=pd.concat(dframe_region_list)
     return dframe_region
 
@@ -126,16 +135,19 @@ def get_region(Start_Location,End_Location):
 def RegionAvgSpeedTime(Start_Location,End_Location,Day):
     return
 #%%
-#print(geochoice(0))
-#print(sensorsD(0))
-print(dframe)
-"""
-To-do 
+#takes a column and returns heatmap with column used as values
+def pos_time_heatmap(values,vmin,vmax):
+    """
+    Flow heatmap for pos against time for specific regions
+    """
+    ValFrame=get_region(0,-1).pivot(columns='geographic_address', index='datetime', values=values)
+    sns.set()
+    ax=sns.heatmap(ValFrame,vmin=vmin,vmax=vmax,yticklabels=240)
+    #ax.set_xticklabels(get_region(0,-1)['datetime'].dt.strftime('%H:%M'))
+    plt.title('Colour='+values)
+    return
+
+pos_time_heatmap('avg_occupancy',0,50)
+#pos_time_heatmap('avg_headway')
 
 
-
-Flow heatmap for pos against time for specific regions
-"""
-print(get_region(1,4))
-#Pos_Time_Flow=get_region(0,10).pivot(index='geographic_address', columns='datetime', values='flow_total')
-#sns.heatmap(Pos_Time_Flow)
