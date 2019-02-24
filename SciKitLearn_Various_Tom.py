@@ -201,7 +201,23 @@ headway_all=['avg_headway','headwaylane_1','headwaylane_2','headwaylane_3','head
 dframe_test['flow_total']=dframe_test[flow_all_lane].sum(axis=1)
 lane_data_all=[speed_all,flow_all_lane,occupancy_all,headway_all]
 # %%
+congested = dframe_test[dframe_test['avg_speed'] <= 45].index
+not_congested = dframe_test[dframe_test['avg_speed'] > 45].index
+pre_congested = congested - 1
+new_dframe_test = dframe_test.ix[pre_congested]
+pre_congested = new_dframe_test[new_dframe_test['avg_speed'] > 45].index
+dframe_test['congested'] = np.nan
+dframe_test['congested'].iloc[not_congested] = 'not_congested'
+dframe_test['congested'].iloc[pre_congested] = 'pre_congested'
+dframe_test['congested'].iloc[congested] = 'congested'
+test_congested = dframe_test.values[:, 3]
+Counter(test_congested)
+#%%
 dframe_test = dframe_test[['avg_flow', 'avg_occupancy', 'avg_headway']]
 dframe_test = dframe_test.dropna()
-
-df_predicted = pd.DataFrame(results['KNN'][].predict(dframe_test))
+KNN_model = models['KNN'].fit(X,Y)
+predicted=KNN_model.predict(dframe_test)
+#%%
+from collections import Counter
+Counter(list(predicted))
+#%%
