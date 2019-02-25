@@ -215,7 +215,9 @@ Counter(test_congested)
 #%%
 dframe_test = dframe_test[['avg_flow', 'avg_occupancy', 'avg_headway']]
 dframe_test = dframe_test.dropna()
+#Fit the model using X as training data and Y as target values
 KNN_model = models['KNN'].fit(X,Y)
+
 predicted=KNN_model.predict(dframe_test)
 #%%
 from collections import Counter
