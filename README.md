@@ -1,6 +1,6 @@
 # MWayComms dataset
 
-To use this repository, clone it and run the files / analysis of interest.
+To use this repository, clone it and run the files / analysis of interest. Additional documentation in *"docs"* folder.
 
 ## File organisation
 
