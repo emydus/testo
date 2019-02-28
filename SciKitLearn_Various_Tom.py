@@ -141,6 +141,8 @@ cwd = cwd.resolve(strict=True)
 
 def loadfiles(allFiles):
     """loop through all csv files and concatenate into a dataframe"""
+    
+    NumFiles=7
     list_ = []
     for file in allFiles:
         df = pd.read_csv(file, usecols=['Geographic Address', 'Date', 'Time', 'Number of Lanes',
@@ -157,6 +159,8 @@ def loadfiles(allFiles):
                                         'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
                          na_values=['-1'], low_memory=False)
         list_.append(df)
+        if len(list_)>=NumFiles:
+            break
     """
 
 

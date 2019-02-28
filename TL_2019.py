@@ -18,6 +18,8 @@ cwd = cwd.resolve(strict=True)
 
 def loadfiles(allFiles):
     """loop through all csv files and concatenate into a dataframe"""
+    NumFiles=2 #Specify number of files to load in. starting from top of the data folder, Couldn't figure out a way that meaningfully skips files
+               #So if you wanted to take only the last week of the month you'd need to load in the whole month or specify all 7 files individually
     list_ = []
     for file in allFiles:
         df = pd.read_csv(file, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes',
@@ -30,6 +32,8 @@ def loadfiles(allFiles):
         'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
         na_values = ['-1'], low_memory=False)
         list_.append(df)
+        if len(list_)>=NumFiles:
+            break
     """
     
     
@@ -57,6 +61,24 @@ dframe = loadfiles(allFiles)
 #change header names to remove white spaces
 dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
 dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
+#Add a column with the type of lane in
+Carriages={'A':'A'
+           'B':'B'
+           'J':'A' #Off
+           'K':'A' #On
+           'M':'B'
+           'L':'B'}
+Carriages_type={'A':'A_main'
+           'B':'B_main'
+           'J':'A_off' #Off
+           'K':'A_on' #On
+           'M':'B_on'
+           'L':'B_off'}           
+           
+           }
+dframe['carriage']=pd.Series([Carriages[i[8]] for i in dframe['geographic_address']])
+print(dframe['carriage'])
+
 #Defining average values
 #Essentially adds an extra column with an average lane value in
 dframe['avg_occupancy'] = dframe[['occupancylane_1', 'occupancylane_2', 'occupancylane_3','occupancylane_4', 'occupancylane_5', 'occupancylane_6','occupancylane_7']].mean(axis=1)
@@ -149,8 +171,8 @@ def pos_time_heatmap(values,vmin,vmax):
 
 pos_time_heatmap('avg_occupancy',0,50)
 #pos_time_heatmap('avg_headway')
-
 #%%
+"""
 from sklearn.cluster import AffinityPropagation
 from sklearn import metrics
 
@@ -204,4 +226,4 @@ for k, col in zip(range(n_clusters_), colors):
 
 plt.title('Estimated number of clusters: %d' % n_clusters_)
 plt.show()
-
+"""
