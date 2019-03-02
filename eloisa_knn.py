@@ -69,19 +69,19 @@ averagevar(df2, 'occupancy')
 averagevar(df2, 'headway')
 
 #create a column assigning a congested label to each row based on speed
-congested = df[df['avg_speed']<45].index
-not_congested = df[df['avg_speed']>46].index
+congested = df[df['avg_speed']<=45].index
+not_congested = df[df['avg_speed']>45].index
 pre_congested = congested - 1
 new_df = df.ix[pre_congested]
-pre_congested = new_df[new_df['avg_speed']>46].index
+pre_congested = new_df[new_df['avg_speed']>45].index
 df['congested'] = np.nan
 df['congested'].iloc[not_congested] = 'not_congested'
 df['congested'].iloc[pre_congested] = 'pre_congested'
 df['congested'].iloc[congested] = 'congested'
 
-# congest_df = df[df['congested'] != 'not_congested']
-# sns.scatterplot(x='datetime', y='geographic_address', hue='congested', data=congest_df)
-# plt.show()
+congest_df = df[df['congested'] != 'not_congested']
+sns.scatterplot(x='datetime', y='geographic_address', hue='congested', data=congest_df)
+plt.show()
 
 
 df_short = df[['avg_flow', 'avg_occupancy', 'avg_headway', 'congested']]
@@ -104,6 +104,6 @@ df3 = df3[['datetime', 'geographic_address', 'predicted']]
 # sns.pairplot(df2, hue="predicted")
 # plt.show()
 
-congest_df = df3[df3['predicted'] != 'not_congested']
-sns.scatterplot(x='datetime', y='geographic_address', hue='predicted', data=congest_df)
-plt.show()
+# congest_df = df3[df3['predicted'] != 'not_congested']
+# sns.scatterplot(x='datetime', y='geographic_address', hue='predicted', data=congest_df)
+# plt.show()
