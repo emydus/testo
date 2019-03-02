@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 
 # t_path =r'/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018/'
-t_path = 'C:/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018'
+t_path = 'D:\\D Drive temp backup\\Uni\\3rd Year\\MWay Comms Project Group\\Git\\PHY346_MWayComms\data'
 csv1 = '40011018.tcd.csv'
 csv2 = '40021018.tcd.csv'
 file1 = os.path.join(t_path, csv1)
@@ -71,13 +71,19 @@ averagevar(df2, 'headway')
 #create a column assigning a congested label to each row based on speed
 congested = df[df['avg_speed']<=45].index
 not_congested = df[df['avg_speed']>45].index
-pre_congested = congested - 1
+pre_congested = np.concatenate((
+    congested - 1,
+    congested - 2,
+    congested - 3),
+    axis=0
+)
 new_df = df.ix[pre_congested]
 pre_congested = new_df[new_df['avg_speed']>45].index
 df['congested'] = np.nan
 df['congested'].iloc[not_congested] = 'not_congested'
 df['congested'].iloc[pre_congested] = 'pre_congested'
 df['congested'].iloc[congested] = 'congested'
+
 
 congest_df = df[df['congested'] != 'not_congested']
 sns.scatterplot(x='datetime', y='geographic_address', hue='congested', data=congest_df)
@@ -107,3 +113,5 @@ df3 = df3[['datetime', 'geographic_address', 'predicted']]
 # congest_df = df3[df3['predicted'] != 'not_congested']
 # sns.scatterplot(x='datetime', y='geographic_address', hue='predicted', data=congest_df)
 # plt.show()
+from collections import Counter
+Counter(list(df['congested']))

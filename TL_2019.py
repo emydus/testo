@@ -62,20 +62,20 @@ dframe = loadfiles(allFiles)
 dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
 dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
 #Add a column with the type of lane in
-Carriages={'A':'A'
-           'B':'B'
-           'J':'A' #Off
-           'K':'A' #On
-           'M':'B'
-           'L':'B'}
-Carriages_type={'A':'A_main'
-           'B':'B_main'
-           'J':'A_off' #Off
-           'K':'A_on' #On
-           'M':'B_on'
-           'L':'B_off'}           
-           
-           }
+#Carriages={'A':'A'
+#           'B':'B'
+#           'J':'A' #Off
+#           'K':'A' #On
+#           'M':'B'
+#           'L':'B'}
+#Carriages_type={'A':'A_main'
+#           'B':'B_main'
+#           'J':'A_off' #Off
+#           'K':'A_on' #On
+#           'M':'B_on'
+#           'L':'B_off'}                   
+#           }
+
 dframe['carriage']=pd.Series([Carriages[i[8]] for i in dframe['geographic_address']])
 print(dframe['carriage'])
 
