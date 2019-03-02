@@ -8,6 +8,7 @@ import os
 import glob
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 
 def loadtraffic(allFiles):
     """loop through all csv files and concatenate into a dataframe"""
@@ -38,13 +39,13 @@ def loadweather(file):
     dframe = pd.read_csv(file, usecols=['src_id','ob_time', 'prst_wx_id', 'visibility'], na_values=['0'])
     dframe = dframe.rename(columns = {'ob_time':'datetime', 'src_id' : 'sensor', 'prst_wx_id':'weather_code'})
     dframe["datetime"] = pd.to_datetime(dframe["datetime"],format="%Y-%m-%d %H:%M:%S")
-    return dfra
+    return dframe
 
-t_path =r'/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018'
-# t_path = 'C:/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018' # use your path
+# t_path =r'/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018'
+t_path = 'C:/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018' # use your path
 allFiles = glob.glob(t_path + "/*.csv")
-w_path =r'/Users/Eloisa/Google Drive/MWay_Comms/'
-# w_path = 'C:/Users/Eloisa/Google Drive/MWay_Comms'
+# w_path =r'/Users/Eloisa/Google Drive/MWay_Comms/'
+w_path = 'C:/Users/Eloisa/Google Drive/MWay_Comms'
 w_csv = 'weather_data.csv'
 w_file = os.path.join(w_path, w_csv)
 t_dframe = loadtraffic(allFiles)
@@ -93,5 +94,5 @@ w_dframe = w_dframe.groupby(pd.Grouper('datetime')).mean()
 
 merged_df = t_dframe.merge(w_dframe, left_on='datetime', right_on='datetime', how='inner')
 merged_df['visibility_km'] = merged_df['visibility']/ 100
-visibility = plt.plot(merged_df['avg_speed'], merged_df['visibility_km'])
+visibility = sns.scatterplot(x=merged_df['avg_speed'], y=merged_df['visibility_km'])
 plt.show()

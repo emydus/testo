@@ -32,10 +32,11 @@ def loadfiles(allFiles):
     dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
     dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
     #convert to datetime
-    dframe["date"] = dframe["date"].map(str) + " " + dframe["time"]
-    dframe["date"] = pd.to_datetime(dframe["date"],format="%d/%m/%y %H:%M")
-    dframe = dframe.drop(columns='time')
-    dframe = dframe.rename(columns = {'date':'datetime'})
+    # dframe["date"] = dframe["date"].map(str) + " " + dframe["time"]
+    # dframe["date"] = pd.to_datetime(dframe["date"],format="%d/%m/%y %H:%M")
+    # dframe = dframe.drop(columns='time')
+    # dframe = dframe.rename(columns = {'date':'datetime'})
+    dframe['date'] = pd.to_datetime(dframe['date'], format='%d/%m/%y')
     return dframe
 
 # path =r'/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018'
@@ -43,8 +44,24 @@ path = 'C:/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018' # use your path
 allFiles = glob.glob(path + "/*.csv")
 dframe = loadfiles(allFiles)
 
-print(dframe)
-# %%
+
+# Mondays = dframe.loc[['2018-10-01', '2018-10-08', '2018-10-15', '2018-10-22', '2018-10-29']]
+# Tuesdays = dframe.loc[dframe['date'].isin(['2018-10-02', '2018-10-09', '2018-10-16', '2018-10-23', '2018-10-30'])].index
+# Wednesdays = dframe.loc[dframe['date'].isin(['2018-10-03', '2018-10-10', '2018-10-17', '2018-10-24', '2018-10-31'])].index
+# Thursdays = dframe.loc[dframe['date'].isin(['2018-10-04', '2018-10-11', '2018-10-18', '2018-10-25'])].index
+# Fridays = dframe.loc[dframe['date'].isin(['2018-10-05', '2018-10-12', '2018-10-19', '2018-10-26'])].index
+# Saturdays = dframe.loc[dframe['date'].isin(['2018-10-06', '2018-10-13', '2018-10-20', '2018-10-27'])].index
+# Sundays = dframe.loc[dframe['date'].isin(['2018-10-07', '2018-10-14', '2018-10-21', '2018-10-28'])].index
+# dframe['day'] = np.nan
+# dframe['day'].loc[['2018-10-01', '2018-10-08', '2018-10-15', '2018-10-22', '2018-10-29']] = 'monday'
+# dframe['day'].loc[['20181001', '20181008', '20181015', '20181022', '20181029']] = 'monday'
+# dframe['day'].iloc[Tuesdays] = 'tuesday'
+# dframe['day'].iloc[Wednesdays] = 'wednesday'
+# dframe['day'].iloc[Thursdays] = 'thursday'
+# dframe['day'].iloc[Fridays] = 'friday'
+# dframe['day'].iloc[Saturdays] = 'saturday'
+# dframe['day'].iloc[Sundays] = 'sunday'
+
 
 def averagevar(dframe, variable):
     """
@@ -95,8 +112,7 @@ def fb_forecast(dframe2):
     return fcst
 
 # def fb_forecast(test)
-averagevar(dframe, 'speed')
-dframe = resample_average(dframe)
+dframe['avg_speed'] = averagevar(dframe, 'speed')
 # dframe_drop = drop_dates(dframe)
 # forecast = fb_forecast(dframe)
 
@@ -134,7 +150,6 @@ dframe = dframe[np.isfinite(dframe['speedlane_1'])]
 # sns.distplot(dframe['speedlane_1'], fit = stats.norm)
 # plt.show()
 
-probability_(dframe)
 
 # plt.plot(merged_df['datetime'], actual_traffic, label = 'actual traffic')
 # plt.plot(merged_df['datetime'], forecasted_traffic, label = 'forecasted traffic')
@@ -148,3 +163,7 @@ probability_(dframe)
 # df_cv.head()
 # fig = plot_cross_validation_metric(df_cv, metric='mape')
 
+dframe['day'] = dframe['date'].dt.weekday_name
+
+sns.violinplot(x="day", y="avg_speed", data=dframe)
+plt.show()
