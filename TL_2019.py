@@ -18,6 +18,8 @@ cwd = cwd.resolve(strict=True)
 
 def loadfiles(allFiles):
     """loop through all csv files and concatenate into a dataframe"""
+    NumFiles=2 #Specify number of files to load in. starting from top of the data folder, Couldn't figure out a way that meaningfully skips files
+               #So if you wanted to take only the last week of the month you'd need to load in the whole month or specify all 7 files individually
     list_ = []
     for file in allFiles:
         df = pd.read_csv(file, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes',
@@ -30,6 +32,8 @@ def loadfiles(allFiles):
         'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
         na_values = ['-1'], low_memory=False)
         list_.append(df)
+        if len(list_)>=NumFiles:
+            break
     """
     
     
@@ -57,6 +61,24 @@ dframe = loadfiles(allFiles)
 #change header names to remove white spaces
 dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
 dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
+#Add a column with the type of lane in
+Carriages={'A':'A'
+           'B':'B'
+           'J':'A' #Off
+           'K':'A' #On
+           'M':'B'
+           'L':'B'}
+Carriages_type={'A':'A_main'
+           'B':'B_main'
+           'J':'A_off' #Off
+           'K':'A_on' #On
+           'M':'B_on'
+           'L':'B_off'}           
+           
+           }
+dframe['carriage']=pd.Series([Carriages[i[8]] for i in dframe['geographic_address']])
+print(dframe['carriage'])
+
 #Defining average values
 #Essentially adds an extra column with an average lane value in
 dframe['avg_occupancy'] = dframe[['occupancylane_1', 'occupancylane_2', 'occupancylane_3','occupancylane_4', 'occupancylane_5', 'occupancylane_6','occupancylane_7']].mean(axis=1)
@@ -149,5 +171,59 @@ def pos_time_heatmap(values,vmin,vmax):
 
 pos_time_heatmap('avg_occupancy',0,50)
 #pos_time_heatmap('avg_headway')
+#%%
+"""
+from sklearn.cluster import AffinityPropagation
+from sklearn import metrics
+
+X=dframe.set_index(pd.DatetimeIndex(dframe['datetime']))
+X=X.between_time('8:00','9:00')
+#X=X.reset_index()
+X=X.loc[:,'speedlane_1':'flow_total']
+#botched way of removing unused lanes for all categories concisely 
+#Change thresh based off time interval till desired columns are produced
+X=X.dropna(axis=1,thresh=50000)
+X=X.dropna()
+print(X.columns)
+#%%
+
+af = AffinityPropagation(preference=-50).fit(X)
+cluster_centers_indices = af.cluster_centers_indices_
+labels = af.labels_
 
 
+n_clusters_ = len(cluster_centers_indices)
+
+print('Estimated number of clusters: %d' % n_clusters_)
+print("Homogeneity: %0.3f" % metrics.homogeneity_score(labels_true, labels))
+print("Completeness: %0.3f" % metrics.completeness_score(labels_true, labels))
+print("V-measure: %0.3f" % metrics.v_measure_score(labels_true, labels))
+print("Adjusted Rand Index: %0.3f"
+      % metrics.adjusted_rand_score(labels_true, labels))
+print("Adjusted Mutual Information: %0.3f"
+      % metrics.adjusted_mutual_info_score(labels_true, labels))
+print("Silhouette Coefficient: %0.3f"
+      % metrics.silhouette_score(X, labels, metric='sqeuclidean'))
+
+# #############################################################################
+# Plot result
+import matplotlib.pyplot as plt
+from itertools import cycle
+
+plt.close('all')
+plt.figure(1)
+plt.clf()
+
+colors = cycle('bgrcmykbgrcmykbgrcmykbgrcmyk')
+for k, col in zip(range(n_clusters_), colors):
+    class_members = labels == k
+    cluster_center = X[cluster_centers_indices[k]]
+    plt.plot(X[class_members, 0], X[class_members, 1], col + '.')
+    plt.plot(cluster_center[0], cluster_center[1], 'o', markerfacecolor=col,
+             markeredgecolor='k', markersize=14)
+    for x in X[class_members]:
+        plt.plot([cluster_center[0], x[0]], [cluster_center[1], x[1]], col)
+
+plt.title('Estimated number of clusters: %d' % n_clusters_)
+plt.show()
+"""

@@ -1,5 +1,12 @@
 # Meeting notes
 
+## 26/2/2019 Meeting
+
+- 2 weeks more to mess around, tie up loose ends after
+- focus on presenting which things are worth looking into further, which things to avoid trying
+- derive presentation structure from report
+- Human-readable formatting from indexing / code presentation
+
 ## 12/2/2019 Meeting
 
 ### Weather/ geomapping
@@ -12,7 +19,7 @@
 
 ### Visualization
 
-- More plotting software / mapping (3D-plots, animation, putting it on a map) 
+- More plotting software / mapping (3D-plots, animation, putting it on a map)
   - Plotly / Bokeh / Geomapping but more fancy
 
 ### Predictive modelling
@@ -22,11 +29,11 @@
     - time,
     - previous sensors,
     - speeds.
-- Thresholds? Critical points? What processes are chaotic and which are easily predicatable? 
-- Chaotic processes (rogue / dangerous drivers, freak accidents) 
+- Thresholds? Critical points? What processes are chaotic and which are easily predicatable?
+- Chaotic processes (rogue / dangerous drivers, freak accidents)
   - aim to quantify a form of probability that these will spontaneously cause an accident.
 
-### Current course of action:
+### Current course of action
 
 - Isolate ranges of congestion, ranges leading up to congestion, ranges of no interest
 - This means:
