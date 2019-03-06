@@ -61,23 +61,33 @@ dframe = loadfiles(allFiles)
 #change header names to remove white spaces
 dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
 dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
-#Add a column with the type of lane in
-#Carriages={'A':'A'
-#           'B':'B'
-#           'J':'A' #Off
-#           'K':'A' #On
-#           'M':'B'
-#           'L':'B'}
-#Carriages_type={'A':'A_main'
-#           'B':'B_main'
-#           'J':'A_off' #Off
-#           'K':'A_on' #On
-#           'M':'B_on'
-#           'L':'B_off'}                   
-#           }
 
-dframe['carriage']=pd.Series([Carriages[i[8]] for i in dframe['geographic_address']])
-print(dframe['carriage'])
+
+def GetSlip(LetterCode):
+    #Returns wether it is an on off slip or the main
+    #also returns which Side of the road the sensor belongs to
+    if LetterCode in ('A','J','K'):
+        Carriage='A'
+    elif LetterCode in ('B','M','L'):
+        Carriage='B'
+    if LetterCode in ('A','B'):
+        Slip='Main'
+    elif LetterCode in ('J','L'):
+        Slip='Off'
+    elif LetterCode in ('K','M'):
+        Slip='On'
+    return Slip,Carriage
+
+LetterCodes=[i[8] for i in dframe['geographic_address']]
+SlipStatus=[]
+CarriageStatus=[]
+for i in LetterCodes:
+    Slip,Carriage=GetSlip(i)
+    SlipStatus.append(Slip)
+    CarriageStatus.append(Carriage)
+dframe['carriage']=pd.Series(CarriageStatus)
+dframe['slip']=pd.Series(SlipStatus)
+
 
 #Defining average values
 #Essentially adds an extra column with an average lane value in
@@ -94,7 +104,6 @@ occupancy_all=['avg_occupancy','occupancylane_1', 'occupancylane_2', 'occupancyl
 headway_all=['avg_headway','headwaylane_1','headwaylane_2','headwaylane_3','headwaylane_4','headwaylane_5','headwaylane_6','headwaylane_7']
 dframe['flow_total']=dframe[flow_all_lane].sum(axis=1)
 lane_data_all=[speed_all,flow_all_lane,occupancy_all,headway_all]
-#%%
 #returns groupby objects which later need calling with .get_group to turn into Dframes
 geo_grouped = dframe.groupby("geographic_address",sort=False)
 time_grouped = dframe.groupby("datetime",sort=False)

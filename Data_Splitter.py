@@ -84,7 +84,7 @@ averagevar(df, 'flow')
 averagevar(df, 'occupancy')
 averagevar(df, 'headway')
 
-# %%
+#%%
 
 congested = df[df['avg_speed'] <= 45].index
 not_congested = df[df['avg_speed'] > 45].index
@@ -140,26 +140,4 @@ geo_grouped = df.groupby('geographic_address',sort=False)
 #Export to CSV for checking everything is as it should be
 #df.to_csv('TESTCSV')
 
-
-
-
-
         
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

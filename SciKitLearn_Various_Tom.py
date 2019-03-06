@@ -189,6 +189,33 @@ dframe_test = loadfiles(allFiles)
 #change header names to remove white spaces
 dframe_test.columns = dframe_test.columns.str.strip().str.lower().str.replace(' ', '_')
 dframe_test.columns = dframe_test.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
+
+
+def GetSlip(LetterCode):
+    #Returns wether it is an on off slip or the main
+    #also returns which Side of the road the sensor belongs to
+    if LetterCode in ('A','J','K'):
+        Carriage='A'
+    elif LetterCode in ('B','M','L'):
+        Carriage='B'
+    if LetterCode in ('A','B'):
+        Slip='Main'
+    elif LetterCode in ('J','L'):
+        Slip='Off'
+    elif LetterCode in ('K','M'):
+        Slip='On'
+    return Slip,Carriage
+
+LetterCodes=[i[8] for i in dframe['geographic_address']]
+SlipStatus=[]
+CarriageStatus=[]
+for i in LetterCodes:
+    Slip,Carriage=GetSlip(i)
+    SlipStatus.append(Slip)
+    CarriageStatus.append(Carriage)
+dframe['carriage']=pd.Series(CarriageStatus)
+dframe['slip']=pd.Series(SlipStatus)
+
 #Defining average values
 #Essentially adds an extra column with an average lane value in
 dframe_test['avg_occupancy'] = dframe_test[['occupancylane_1', 'occupancylane_2', 'occupancylane_3','occupancylane_4', 'occupancylane_5', 'occupancylane_6','occupancylane_7']].mean(axis=1)
