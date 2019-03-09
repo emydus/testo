@@ -167,19 +167,26 @@ def RegionAvgSpeedTime(Start_Location,End_Location,Day):
     return
 #%%
 #takes a column and returns heatmap with column used as values
-def pos_time_heatmap(values,vmin,vmax):
+def pos_time_heatmap(values,carriages,vmin,vmax):
     """
     Flow heatmap for pos against time for specific regions
     """
-    ValFrame=get_region(0,-1).pivot(columns='geographic_address', index='datetime', values=values)
+    ValFrame=get_region(170,175).loc[get_region(170,175)['carriage'].isin(carriages) & get_region(170,175)['slip'].isin(['Main'])].pivot(columns='geographic_address', index='datetime', values=values)
     sns.set()
     ax=sns.heatmap(ValFrame,vmin=vmin,vmax=vmax,yticklabels=240)
     #ax.set_xticklabels(get_region(0,-1)['datetime'].dt.strftime('%H:%M'))
     plt.title('Colour='+values)
     return
 
-pos_time_heatmap('avg_occupancy',0,50)
+
+#pos_time_heatmap('flow_total',['B'],0,100)
+plt.show()
 #pos_time_heatmap('avg_headway')
+
+#Loc_test=get_region(0,5).loc[get_region(0,5)['carriage']=='A']
+df6385B=dframe.loc[dframe['geographic_address']=='M42/6385B']
+plt.plot(df6385B['datetime'],df6385B['flow_total'])
+plt.show()
 #%%
 """
 from sklearn.cluster import AffinityPropagation

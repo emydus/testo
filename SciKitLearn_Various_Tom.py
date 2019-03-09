@@ -142,7 +142,7 @@ cwd = cwd.resolve(strict=True)
 def loadfiles(allFiles):
     """loop through all csv files and concatenate into a dataframe"""
     
-    NumFiles=7
+    NumFiles=8
     list_ = []
     for file in allFiles:
         df = pd.read_csv(file, usecols=['Geographic Address', 'Date', 'Time', 'Number of Lanes',
