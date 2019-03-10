@@ -3,36 +3,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import glob
 from sklearn import model_selection
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
-
-# t_path =r'/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018/'
-t_path = 'D:\\D Drive temp backup\\Uni\\3rd Year\\MWay Comms Project Group\\Git\\PHY346_MWayComms\data'
-csv1 = '40011018.tcd.csv'
-csv2 = '40021018.tcd.csv'
-file1 = os.path.join(t_path, csv1)
-file2 = os.path.join(t_path, csv2)
-
-df = pd.read_csv(file1, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Speed(Lane 1)',
-        'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
-        'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
-        'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
-        'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
-        'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
-        'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
-        na_values = ['-1'])
-
-df2 = pd.read_csv(file2, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Speed(Lane 1)',
-        'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
-        'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
-        'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
-        'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
-        'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
-        'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
-        na_values = ['-1'])
 
 def edit(dframe):  
     #change header names to remove white spaces
@@ -41,9 +17,82 @@ def edit(dframe):
     #convert to datetime
     dframe["date"] = dframe["date"].map(str) + " " + dframe["time"]
     dframe["date"] = pd.to_datetime(dframe["date"],format="%d/%m/%y %H:%M")
-    dframe = dframe.drop(columns='time')
+    # dframe = dframe.drop(columns='time')
+    dframe['time'] = pd.to_datetime(dframe["time"],format="%H:%M")
     dframe = dframe.rename(columns = {'date':'datetime'})
     return dframe
+
+def loadtraffic(allFiles):
+    """loop through all csv files and concatenate into a dataframe"""
+    list_ = []
+    for file in allFiles:
+        df = pd.read_csv(file, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes',
+        'Flow(Category 1)', 'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)',
+        'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
+        'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
+        'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
+        'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
+        'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
+        'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
+        na_values = ['-1'])
+        list_.append(df)
+    dframe = pd.concat(list_)
+    dframe = edit(dframe)
+    return dframe
+
+path = 'C:/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018' # use your path
+allFiles = glob.glob(path + "/*.csv")
+df = loadtraffic(allFiles)
+t_path =r'/Users/Eloisa/Google Drive/MWay_Comms/'
+# t_path = 'D:\\D Drive temp backup\\Uni\\3rd Year\\MWay Comms Project Group\\Git\\PHY346_MWayComms\data'
+csv1 = '40011018.tcd.csv'
+file1 = os.path.join(t_path, csv1)
+
+df2 = pd.read_csv(file1, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Speed(Lane 1)',
+        'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
+        'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
+        'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
+        'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
+        'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
+        'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
+        na_values = ['-1'])
+
+# df2 = pd.read_csv(file2, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Speed(Lane 1)',
+#         'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
+#         'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
+#         'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
+#         'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
+#         'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
+#         'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
+#         na_values = ['-1'])
+
+def GetSlip(LetterCode):
+#Returns wether it is an on off slip or the main
+#also returns which Side of the road the sensor belongs to
+    if LetterCode in ('A','J','K'):
+        Carriage='A'
+    elif LetterCode in ('B','M','L'):
+        Carriage='B'
+    if LetterCode in ('A','B'):
+        Slip='Main'
+    elif LetterCode in ('J','L'):
+        Slip='Off'
+    elif LetterCode in ('K','M'):
+        Slip='On'
+    return Slip,Carriage
+
+def slip_codes(dframe):
+    LetterCodes=[i[8] for i in dframe['geographic_address']]
+    SlipStatus=[]
+    CarriageStatus=[]
+    for i in LetterCodes:
+        Slip,Carriage=GetSlip(i)
+        SlipStatus.append(Slip)
+        CarriageStatus.append(Carriage)
+    dframe['carriage']=pd.Series(CarriageStatus)
+    dframe['slip']=pd.Series(SlipStatus)
+    return(dframe)
+
 
 def averagevar(dframe, variable):
     """
@@ -55,18 +104,58 @@ def averagevar(dframe, variable):
                     variable + 'lane_7']].mean(axis=1)
     return dframe['avg_'+ variable]
 
+def address_convert(df):
+    """creates integer using geographic address"""
+    df['address_int'] = df['geographic_address'].str.slice(start=4, stop=8)
+    df['address_int'] = pd.to_numeric(df['address_int'])
+    return df
+
+def time_to_int(df):
+    df['time_change'] = df['time'] - df['time'].min()
+    df['time_change'] = df['time_change'].dt.total_seconds()
+    return df
+
+def weekday_number(row):
+    """convert weekday to integer"""
+    if row =='Monday':
+        return 1
+    if row == 'Tuesday':
+        return 2
+    if row == 'Wednesday':
+        return 3
+    if row == 'Thursday':
+        return 4
+    if row == 'Friday':
+        return 5
+    if row == 'Saturday':
+        return 6
+    if row == 'Sunday':
+        return 7
+    return other
+
+
 #preprocess data and average main variables
-df = edit(df)
 averagevar(df, 'speed')
 averagevar(df, 'flow')
 averagevar(df, 'occupancy')
 averagevar(df, 'headway')
-
+df = df[['datetime', 'time', 'geographic_address', 'avg_speed', 'avg_flow', 'avg_occupancy', 'avg_headway']]
 df2 = edit(df2)
 averagevar(df2, 'speed')
 averagevar(df2, 'flow')
 averagevar(df2, 'occupancy')
 averagevar(df2, 'headway')
+df2 = df2[['datetime', 'time', 'geographic_address', 'avg_speed', 'avg_flow', 'avg_occupancy', 'avg_headway']]
+df = slip_codes(df)
+df = address_convert(df)
+df2 = slip_codes(df2)
+df2 = address_convert(df2)
+df['day'] = df['datetime'].dt.weekday_name
+df2['day'] = df2['datetime'].dt.weekday_name
+df = time_to_int(df)
+df2 = time_to_int(df2)
+df ['day_int'] = df['day'].apply (lambda row: weekday_number(row))
+df2['day_int'] = df2['day'].apply (lambda row: weekday_number(row))
 
 #create a column assigning a congested label to each row based on speed
 congested = df[df['avg_speed']<=45].index
@@ -74,30 +163,33 @@ not_congested = df[df['avg_speed']>45].index
 pre_congested = np.concatenate((
     congested - 1,
     congested - 2,
-    congested - 3),
+    congested - 3,
+    congested - 4,
+    congested - 5,
+    congested - 6,
+    congested - 7),
     axis=0
 )
-new_df = df.ix[pre_congested]
-pre_congested = new_df[new_df['avg_speed']>45].index
+# new_df = df.ix[pre_congested]
+# pre_congested = new_df[new_df['avg_speed']>45].index
 df['congested'] = np.nan
 df['congested'].iloc[not_congested] = 'not_congested'
 df['congested'].iloc[pre_congested] = 'pre_congested'
 df['congested'].iloc[congested] = 'congested'
 
-
 congest_df = df[df['congested'] != 'not_congested']
+df.to_csv('all_days.csv')
 sns.scatterplot(x='datetime', y='geographic_address', hue='congested', data=congest_df)
 plt.show()
 
-
-df_short = df[['avg_flow', 'avg_occupancy', 'avg_headway', 'congested']]
+df_short = df[['avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int']]
 df_short = df_short.dropna()
 
-X_train = df_short[['avg_flow', 'avg_occupancy', 'avg_headway']]
+X_train = df_short[['avg_flow', 'avg_occupancy', 'avg_headway', 'time_change', 'address_int', 'day_int']]
 Y_train = df_short['congested']
 knn = KNeighborsClassifier()
 knn.fit(X_train, Y_train)
-df2_short = df2[['avg_flow', 'avg_occupancy', 'avg_headway']]
+df2_short = df2[['avg_flow', 'avg_occupancy', 'avg_headway', 'time_change', 'address_int', 'day_int']]
 df2_short = df2_short.dropna()
 X_new = df2_short
 df2_short['predicted'] = knn.predict(X_new)
@@ -110,8 +202,6 @@ df3 = df3[['datetime', 'geographic_address', 'predicted']]
 # sns.pairplot(df2, hue="predicted")
 # plt.show()
 
-# congest_df = df3[df3['predicted'] != 'not_congested']
-# sns.scatterplot(x='datetime', y='geographic_address', hue='predicted', data=congest_df)
-# plt.show()
-from collections import Counter
-Counter(list(df['congested']))
+congest_df = df3[df3['predicted'] != 'not_congested']
+sns.scatterplot(x='datetime', y='geographic_address', hue='predicted', data=congest_df)
+plt.show()
