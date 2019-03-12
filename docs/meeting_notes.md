@@ -75,3 +75,32 @@
 - Levy distribution -> appears in nature a lot
 - Skew kertosis
 - Look at more distributions online
+
+
+## 12/3/19 Meeting
+
+### Presentation Week: Beginning 13th May (?)
+
+Easter Ends 29th April
+
+- Exams start 26th May
+
+Weeks Starting:
+
+April 8  ~ Easter
+      15 ~ Easter
+      22 ~ Easter
+      29
+
+May   6
+      13 ~ Presentation???
+      20 ~ Exams Start
+
+Date flexible, depending on our individual exam timetables.
+
+### Report
+
+- Over next week start thinking about what exactly we are going to put in the final document.
+- Structure of what is being talked about in what order.
+- Split report into sections.
+- Do not pack main body of report with masses of information. Nice and concise. "Gory detail" can be ignored, or added into appendices.
