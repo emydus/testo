@@ -8,7 +8,7 @@ import os
 # datafolderpath = os.path.join(workdir,"data")
 # allFiles = glob.glob(datafolderpath + "/*.csv")
 
-path = 'C:/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018' # use your path
+path = '/home/sigma/Documents/PHY346 (MWay)/Local Gdrive/' # use your path
 allFiles = glob.glob(path + "/*.csv")
 
 frame = pd.DataFrame()

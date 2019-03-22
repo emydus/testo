@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 
 # t_path =r'/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018/'
-t_path = 'C:/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018'
+t_path = '/home/sigma/Documents/PHY346 (MWay)/Local Git/data/XTRA DATA'
 csv1 = '40011018.tcd.csv'
 csv2 = '40021018.tcd.csv'
 file1 = os.path.join(t_path, csv1)
