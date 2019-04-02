@@ -1,0 +1,15 @@
+RIP Jason
+
+
+Machine Learning
+Weather
+Facebook profit
+Animation
+Widget
+k-means?
+Geopandas
+prob distribs +distribs
+decision trees
+Violin plots
+Correlations
+Misc Visualisation (eg Heatmaps)
