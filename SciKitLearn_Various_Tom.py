@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn import model_selection
+
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
@@ -253,4 +253,3 @@ predicted=KNN_model.predict(dframe_test)
 #%%
 from collections import Counter
 Counter(list(predicted))
-#%%
