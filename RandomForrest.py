@@ -187,9 +187,9 @@ df_short = df_short.dropna()
 df2_short = df2.drop(columns=['geographic_address','datetime','time','day','slip','carriage','speedlane_4','flowlane_4','headwaylane_4','occupancylane_4','speedlane_3','flowlane_3','headwaylane_3','occupancylane_3']).dropna(axis=1,how='all')
 df2_short = df2_short.dropna()
 #%%
-df_short = df[['avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int']]
+df_short = df[['avg_speed','avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int']]
 df_short = df_short.dropna()
-df2_short = df2[['avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int']]
+df2_short = df2[['avg_speed','avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int']]
 df2_short = df2_short.dropna()
 #%%
 X_train = df_short.drop(columns=['congested'])

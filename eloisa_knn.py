@@ -22,6 +22,18 @@ def edit(dframe):
     dframe = dframe.rename(columns = {'date':'datetime'})
     return dframe
 
+def edit(dframe):  
+    #change header names to remove white spaces
+    dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
+    dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
+    #convert to datetime
+    dframe["date"] = dframe["date"].map(str) + " " + dframe["time"]
+    dframe["date"] = pd.to_datetime(dframe["date"],format="%d/%m/%y %H:%M")
+    # dframe = dframe.drop(columns='time')
+    dframe['time'] = pd.to_datetime(dframe["time"],format="%H:%M")
+    dframe = dframe.rename(columns = {'date':'datetime'})
+    return dframe
+
 def loadtraffic(allFiles):
     """loop through all csv files and concatenate into a dataframe"""
     list_ = []
@@ -40,15 +52,15 @@ def loadtraffic(allFiles):
     dframe = edit(dframe)
     return dframe
 
-path = 'C:/Users/Eloisa/Google Drive/MWay_Comms/Oct_2018' # use your path
+path = 'D:\\D Drive temp backup\\Uni\\3rd Year\\MWay Comms Project Group\\Git\\PHY346_MWayComms\data' # use your path
 allFiles = glob.glob(path + "/*.csv")
 df = loadtraffic(allFiles)
-t_path =r'/Users/Eloisa/Google Drive/MWay_Comms/'
-# t_path = 'D:\\D Drive temp backup\\Uni\\3rd Year\\MWay Comms Project Group\\Git\\PHY346_MWayComms\data'
+t_path = 'D:\\D Drive temp backup\\Uni\\3rd Year\\MWay Comms Project Group\\Git\\PHY346_MWayComms\data'
 csv1 = '40011018.tcd.csv'
 file1 = os.path.join(t_path, csv1)
 
-df2 = pd.read_csv(file1, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Speed(Lane 1)',
+df2 = pd.read_csv(file1, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes',
+        'Flow(Category 1)', 'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)',
         'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
         'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
         'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
@@ -139,13 +151,11 @@ averagevar(df, 'speed')
 averagevar(df, 'flow')
 averagevar(df, 'occupancy')
 averagevar(df, 'headway')
-df = df[['datetime', 'time', 'geographic_address', 'avg_speed', 'avg_flow', 'avg_occupancy', 'avg_headway']]
 df2 = edit(df2)
 averagevar(df2, 'speed')
 averagevar(df2, 'flow')
 averagevar(df2, 'occupancy')
 averagevar(df2, 'headway')
-df2 = df2[['datetime', 'time', 'geographic_address', 'avg_speed', 'avg_flow', 'avg_occupancy', 'avg_headway']]
 df = slip_codes(df)
 df = address_convert(df)
 df2 = slip_codes(df2)
@@ -157,43 +167,67 @@ df2 = time_to_int(df2)
 df ['day_int'] = df['day'].apply (lambda row: weekday_number(row))
 df2['day_int'] = df2['day'].apply (lambda row: weekday_number(row))
 
-#create a column assigning a congested label to each row based on speed
-congested = df[df['avg_speed']<=45].index
-not_congested = df[df['avg_speed']>45].index
-pre_congested = np.concatenate((
-    congested - 1,
-    congested - 2,
-    congested - 3,
-    congested - 4,
-    congested - 5,
-    congested - 6,
-    congested - 7),
-    axis=0
-)
-# new_df = df.ix[pre_congested]
-# pre_congested = new_df[new_df['avg_speed']>45].index
-df['congested'] = np.nan
-df['congested'].iloc[not_congested] = 'not_congested'
-df['congested'].iloc[pre_congested] = 'pre_congested'
-df['congested'].iloc[congested] = 'congested'
+def GetCongestion(dFrame):
+    #create a column assigning a congested label to each row based on speed
+    congested = dFrame[dFrame['avg_speed']<=45].index
+    not_congested = dFrame[dFrame['avg_speed']>45].index
+    pre_congested = np.concatenate((
+        congested - 1,
+        congested - 2,
+        congested - 3,
+        congested - 4,
+        congested - 5,
+        congested - 6,
+        congested - 7),
+        axis=0
+    )
+    
+    dFrame['congested'] = np.nan
+    dFrame['congested'].iloc[not_congested] = 'not_congested'
+    dFrame['congested'].iloc[pre_congested] = 'pre_congested'
+    dFrame['congested'].iloc[congested] = 'congested'
+    return dFrame
+#%%
 
+df=GetCongestion(df)
+df2=GetCongestion(df2)
+#%%
 congest_df = df[df['congested'] != 'not_congested']
 df.to_csv('all_days.csv')
 sns.scatterplot(x='datetime', y='geographic_address', hue='congested', data=congest_df)
 plt.show()
-
-df_short = df[['avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int']]
+#%%
+#df_short = df[['avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int']]
+#df_short = df_short.dropna()
+#%%
+#Column set 1
+df_short = df.drop(columns=['geographic_address','datetime','time','day','slip','carriage','speedlane_4','flowlane_4','headwaylane_4','occupancylane_4','speedlane_3','flowlane_3','headwaylane_3','occupancylane_3']).dropna(axis=1,how='all')
 df_short = df_short.dropna()
-
-X_train = df_short[['avg_flow', 'avg_occupancy', 'avg_headway', 'time_change', 'address_int', 'day_int']]
+df2_short = df2.drop(columns=['geographic_address','datetime','time','day','slip','carriage','speedlane_4','flowlane_4','headwaylane_4','occupancylane_4','speedlane_3','flowlane_3','headwaylane_3','occupancylane_3']).dropna(axis=1,how='all')
+df2_short = df2_short.dropna()
+#%%
+#Column set 2
+df_short = df[['avg_speed','avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int']]
+df_short = df_short.dropna()
+df2_short = df2[['avg_speed','avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int']]
+df2_short = df2_short.dropna()
+#%%
+X_train = df_short.drop(columns=['congested'])
 Y_train = df_short['congested']
+X_test=df2_short.drop(columns=['congested'])
+Y_test=df2_short['congested']
+
+#X_train = df_short[['avg_flow', 'avg_occupancy', 'avg_headway', 'time_change', 'address_int', 'day_int']]
+#Y_train = df_short['congested']
 knn = KNeighborsClassifier()
 knn.fit(X_train, Y_train)
-df2_short = df2[['avg_flow', 'avg_occupancy', 'avg_headway', 'time_change', 'address_int', 'day_int']]
-df2_short = df2_short.dropna()
-X_new = df2_short
-df2_short['predicted'] = knn.predict(X_new)
+#df2_short = df2[['avg_flow', 'avg_occupancy', 'avg_headway', 'time_change', 'address_int', 'day_int']]
+#df2_short = df2_short.dropna()
+#X_test = df2_short
+#df2_short['predicted'] = knn.predict(X_new)
+print('knn.score',knn.score(X=X_test,y=Y_test))
 
+#%%
 df3 =pd.concat([df2, df2_short], axis=1)
 df3= df3.dropna(subset=['predicted'])
 # df2 = pd.melt(df2, 'predicted', var_name='measurement')
