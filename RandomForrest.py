@@ -173,9 +173,11 @@ def GetCongestion(dFrame):
     dFrame['congested'].iloc[congested] = 'congested'
     return dFrame
 #%%
-
+#Get congestion status for training and test set
 df=GetCongestion(df)
 df2=GetCongestion(df2)
+
+
 #%%
 congest_df = df[df['congested'] != 'not_congested']
 #df.to_csv('all_days.csv')
@@ -200,7 +202,9 @@ Y_test=df2_short['congested']
 
 clf=RandomForestClassifier()
 clf.fit(X=X_train,y=Y_train)
-print('Feature importances\n',[(X_train.columns.values[i],clf.feature_importances_[i]) for i in range(len(clf.feature_importances_))],'\n')
+FeatureImportances=np.array([(X_train.columns.values[i],clf.feature_importances_[i]) for i in range(len(clf.feature_importances_))])
+FeatureImportances=np.flip(FeatureImportances[FeatureImportances[:,1].argsort()])
+print('Feature importances\n',FeatureImportances,'\n')
 ClassPredictionAccuracy=clf.score(X=X_test, y=Y_test)
 print('Class prediction accuracy=',ClassPredictionAccuracy) #How accurate the predictions are on a test set
 
