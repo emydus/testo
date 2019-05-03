@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu May  2 21:23:31 2019
+
+@author: wato9
+"""
+
 import os
 import pandas as pd
 import numpy as np
@@ -21,9 +28,6 @@ def edit(dframe):
     dframe['time'] = pd.to_datetime(dframe["time"],format="%H:%M")
     dframe = dframe.rename(columns = {'date':'datetime'})
     return dframe
-#%%
-#This cell for comparing two single days
-
 
 
 def loadtraffic(allFiles):
@@ -43,84 +47,18 @@ def loadtraffic(allFiles):
     dframe = pd.concat(list_)
     dframe = edit(dframe)
     return dframe
-#%%
-path = 'D:\\D Drive temp backup\\Uni\\3rd Year\\MWay Comms Project Group\\Git\\PHY346_MWayComms\data' # use your path
-allFiles = glob.glob(path + "/*.csv")
-df = loadtraffic(allFiles)
-t_path = 'D:\\D Drive temp backup\\Uni\\3rd Year\\MWay Comms Project Group\\Git\\PHY346_MWayComms\data'
-csv1 = '40011018.tcd.csv'
-file1 = os.path.join(t_path, csv1)
 
-df2 = pd.read_csv(file1, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes',
-        'Flow(Category 1)', 'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)',
-        'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
-        'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
-        'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
-        'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
-        'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
-        'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
-        na_values = ['-1'])
-
-# df2 = pd.read_csv(file2, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes', 'Speed(Lane 1)',
-#         'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
-#         'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
-#         'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
-#         'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
-#         'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
-#         'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
-#         na_values = ['-1'])
-
-#%%
 cwd = Path.cwd()
 cwd = cwd.resolve(strict=True)
-#%%
-""""
-def loadfiles(allFiles):
-    """loop through all csv files and concatenate into a dataframe"""
-    NumFiles=14 #Specify number of files to load in. starting from top of the data folder, Couldn't figure out a way that meaningfully skips files
-               #So if you wanted to take only the last week of the month you'd need to load in the whole month or specify all 7 files individually
-    list_ = []
-    for file in allFiles:
-        df = pd.read_csv(file, usecols = ['Geographic Address', 'Date', 'Time', 'Number of Lanes',
-        'Flow(Category 1)', 'Flow(Category 2)', 'Flow(Category 3)', 'Flow(Category 4)', 'Speed(Lane 1)',
-        'Speed(Lane 2)', 'Speed(Lane 3)', 'Speed(Lane 4)', 'Speed(Lane 5)', 'Speed(Lane 6)',
-        'Speed(Lane 7)', 'Flow(Lane 1)', 'Flow(Lane 2)', 'Flow(Lane 3)', 'Flow(Lane 4)',
-        'Flow(Lane 5)', 'Flow(Lane 6)', 'Flow(Lane 7)', 'Occupancy(Lane 1)', 'Occupancy(Lane 2)',
-        'Occupancy(Lane 3)', 'Occupancy(Lane 4)', 'Occupancy(Lane 5)', 'Occupancy(Lane 6)',
-        'Occupancy(Lane 7)', 'Headway(Lane 1)', 'Headway(Lane 2)', 'Headway(Lane 3)',
-        'Headway(Lane 4)', 'Headway(Lane 5)', 'Headway(Lane 6)', 'Headway(Lane 7)'],
-        na_values = ['-1'], low_memory=False)
-        list_.append(df)
-        if len(list_)>=NumFiles:
-            break
-    """
-    
-    
-    Change number of days being looked at here
-    
-    
-    """
-    dframe = pd.concat(list_)
-    #change header names to remove white spaces
-    dframe.columns = dframe.columns.str.strip().str.lower().str.replace(' ', '_')
-    dframe.columns = dframe.columns.str.replace('(', '').str.replace(')', '').str.replace('/', '-')
-    #convert to datetime
-    dframe["date"] = dframe["date"].map(str) + " " + dframe["time"]
-    dframe["date"] = pd.to_datetime(dframe["date"],format="%d/%m/%y %H:%M")
-    dframe = dframe.drop(columns='time')
-    dframe = dframe.rename(columns = {'date':'datetime'})
-    return dframe
-"""
-#%%
+
 #Load in files
 datafolderpath = cwd.joinpath("data")
 allFiles=datafolderpath.glob("*.tcd.csv*")
 dframe = loadtraffic(allFiles)
+
+#Give it a larger training than test set
 df=dframe.iloc[len(dframe)//2:]
 df2=dframe.iloc[:len(dframe)//2]
-
-#%%
-
 
 
 def GetSlip(LetterCode):
@@ -232,17 +170,12 @@ def GetCongestion(dFrame):
     dFrame['congested'].iloc[pre_congested] = 'pre_congested'
     dFrame['congested'].iloc[congested] = 'congested'
     return dFrame
-#%%
 #Get congestion status for training and test set
 df=GetCongestion(df)
 df2=GetCongestion(df2)
 
 
-#%%
-congest_df = df[df['congested'] != 'not_congested']
-#df.to_csv('all_days.csv')
-sns.scatterplot(x='datetime', y='geographic_address', hue='congested', data=congest_df)
-plt.show()
+
 #%%
 df_short = df.drop(columns=['geographic_address','datetime','time','day','slip','carriage','speedlane_4','flowlane_4','headwaylane_4','occupancylane_4','speedlane_3','flowlane_3','headwaylane_3','occupancylane_3']).dropna(axis=1,how='all')
 df_short = df_short.dropna()
@@ -267,4 +200,19 @@ FeatureImportances=np.flip(FeatureImportances[FeatureImportances[:,1].argsort()]
 print('Feature importances\n',FeatureImportances,'\n')
 ClassPredictionAccuracy=clf.score(X=X_test, y=Y_test)
 print('Class prediction accuracy=',ClassPredictionAccuracy) #How accurate the predictions are on a test set
+#%%
+df2_short['predicted'] = clf.predict(X_test)
+df3 =pd.concat([df2, df2_short], axis=1)
+df3= df3.dropna(subset=['predicted'])
+# df2 = pd.melt(df2, 'predicted', var_name='measurement')
+df3 = df3[['datetime', 'geographic_address', 'predicted']]
+# sns.swarmplot(x='measurement', y="value", hue="predicted", data=df2)
+# sns.pairplot(df2, hue="predicted")
+# plt.show()
+
+
+
+congest_df = df3[df3['predicted'] != 'not_congested']
+sns.scatterplot(x='datetime', y='geographic_address', hue='predicted', data=congest_df)
+plt.show()
 
