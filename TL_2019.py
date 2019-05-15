@@ -176,16 +176,18 @@ def pos_time_heatmap(values,carriages,vmin=0,vmax=None,pos_start=0,pos_end=-1):
     """
     ValFrame=get_region(pos_start,pos_end).loc[get_region(pos_start,pos_end)['carriage'].isin(carriages) & get_region(pos_start,pos_end)['slip'].isin(['Main'])].pivot(columns='geographic_address', index='datetime', values=values)
     sns.set()
-    ax=sns.heatmap(ValFrame,vmin=vmin,vmax=vmax)
+    sns.heatmap(ValFrame,vmin=vmin,vmax=vmax)
     #ax.set_yticklabels(get_region(pos_start,pos_end)['datetime'].dt.strftime('%H:%M'))
+    
     plt.title('Colour='+values,'Carriage(s)',carriages)
     return
 #%%
 dframe['flow*speed']=dframe['avg_speed'].mul(dframe['flow_total'])
 #%%
-pos_time_heatmap('flow*speed',['A'])
+pos_time_heatmap('avg_speed',['B'],vmin=60,vmax=140)
+
 plt.show()
-pos_time_heatmap('flow*speed',['B'])
+#pos_time_heatmap('flow*speed',['B'])
 
 #%%
 
@@ -197,4 +199,5 @@ plt.show()
 df6385B=dframe.loc[dframe['geographic_address']=='M42/6385B']
 plt.plot(df6385B['datetime'],df6385B['flow_total'])
 plt.show()
+#%%
 #

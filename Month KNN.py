@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu May  2 21:23:31 2019
+Created on Mon May  6 13:38:09 2019
 
-@author: wato9
+@author: TomLockwood
+
 """
-
 import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.ensemble import RandomForestClassifier
+import seaborn as sns
+import glob
 from sklearn import model_selection
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+from sklearn.neighbors import KNeighborsClassifier
 import glob
 import seaborn as sns
 from pathlib import Path
@@ -158,10 +163,7 @@ def GetCongestion(dFrame):
         congested - 1,
         congested - 2,
         congested - 3,
-        congested - 4,
-        congested - 5,
-        congested - 6,
-        congested - 7),
+        ),
         axis=0
     )
     
@@ -173,20 +175,28 @@ def GetCongestion(dFrame):
 #Get congestion status for training and test set
 df=GetCongestion(df)
 df2=GetCongestion(df2)
-
-
-
-
 #%%
+congest_df = df[df['congested'] != 'not_congested']
+df.to_csv('all_days.csv')
+sns.scatterplot(x='datetime', y='geographic_address', hue='congested', data=congest_df)
+plt.show()
+#%%
+#df_short = df[['avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int']]
+#df_short = df_short.dropna()
+#%%
+#Column set 1
+#This column selection performs significantly worse
+"""
 df_short = df.drop(columns=['geographic_address','datetime','time','day','slip','carriage','speedlane_4','flowlane_4','headwaylane_4','occupancylane_4','speedlane_3','flowlane_3','headwaylane_3','occupancylane_3']).dropna(axis=1,how='all')
 df_short = df_short.dropna()
 df2_short = df2.drop(columns=['geographic_address','datetime','time','day','slip','carriage','speedlane_4','flowlane_4','headwaylane_4','occupancylane_4','speedlane_3','flowlane_3','headwaylane_3','occupancylane_3']).dropna(axis=1,how='all')
 df2_short = df2_short.dropna()
-
+"""
 #%%
-df_short = df[['avg_speed','avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int','carriage']]
+#Column set 2
+df_short = df[['avg_speed','avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int']]
 df_short = df_short.dropna()
-df2_short = df2[['avg_speed','avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int','carriage']]
+df2_short = df2[['avg_speed','avg_flow', 'avg_occupancy', 'avg_headway', 'congested', 'time_change', 'address_int', 'day_int']]
 df2_short = df2_short.dropna()
 #%%
 X_train = df_short.drop(columns=['congested'])
@@ -194,16 +204,17 @@ Y_train = df_short['congested']
 X_test=df2_short.drop(columns=['congested'])
 Y_test=df2_short['congested']
 
+#X_train = df_short[['avg_flow', 'avg_occupancy', 'avg_headway', 'time_change', 'address_int', 'day_int']]
+#Y_train = df_short['congested']
+knn = KNeighborsClassifier()
+knn.fit(X_train, Y_train)
+#df2_short = df2[['avg_flow', 'avg_occupancy', 'avg_headway', 'time_change', 'address_int', 'day_int']]
+#df2_short = df2_short.dropna()
+#X_test = df2_short
+df2_short['predicted'] = knn.predict(X_test)
+print('knn.score',knn.score(X=X_test,y=Y_test))
 
-clf=RandomForestClassifier()
-clf.fit(X=X_train,y=Y_train)
-FeatureImportances=np.array([(X_train.columns.values[i],clf.feature_importances_[i]) for i in range(len(clf.feature_importances_))])
-FeatureImportances=np.flip(FeatureImportances[FeatureImportances[:,1].argsort()])
-print('Feature importances\n',FeatureImportances,'\n')
-ClassPredictionAccuracy=clf.score(X=X_test, y=Y_test)
-print('Class prediction accuracy=',ClassPredictionAccuracy) #How accurate the predictions are on a test set
 #%%
-df2_short['predicted'] = clf.predict(X_test)
 df3 =pd.concat([df2, df2_short], axis=1)
 df3= df3.dropna(subset=['predicted'])
 # df2 = pd.melt(df2, 'predicted', var_name='measurement')
@@ -211,8 +222,6 @@ df3 = df3[['datetime', 'geographic_address', 'predicted']]
 # sns.swarmplot(x='measurement', y="value", hue="predicted", data=df2)
 # sns.pairplot(df2, hue="predicted")
 # plt.show()
-
-
 
 congest_df = df3[df3['predicted'] != 'not_congested']
 sns.scatterplot(x='datetime', y='geographic_address', hue='predicted', data=congest_df)
